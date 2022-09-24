@@ -1,0 +1,79 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --deep-blue: rgba(1, 1, 30, 1);
+  --deep-blue-translucent: rgba(1, 1, 30, 0.5);
+}
+
+@font-face {
+  font-family: "Jost";
+  src: url("./fonts/Jost-VariableFont_wght.ttf");
+}
+
+body,
+html {
+  font-family: "Jost";
+  background-color: var(--deep-blue);
+  color: #fefefe;
+}
+
+.page-container {
+  display: grid;
+  grid-template-columns: 15% 85%;
+}
+
+.nav-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  height: 100vh;
+
+  /* background-color: yellow; */
+}
+
+.nav-panel .nav-item {
+  cursor: pointer;
+  font-size: 4rem;
+  padding: 1rem;
+}
+
+.content-panel {
+  /* background-color: red; */
+  display: flex;
+  flex-direction: row;
+  /* justify-content: center; */
+  /* align-items: center; */
+
+  min-height: 100vh;
+
+  /* margin: auto; */
+  /* height: 100%; */
+  /* width: 100%; */
+  /* display: flex; */
+  /* align-items: center; */
+  /* justify-content: center; */
+  /* display: flex; */
+  /* justify-content: center; */
+}
+
+.content-panel .panels {
+  /* background-color: purple; */
+  display: flex;
+  flex-direction: row;
+  /* min-height: 100vh; */
+  min-width: 100%;
+  height: 100%;
+}
+
+.content-panel .panel-item {
+  width: 600px;
+  height: 200px;
+  border-radius: 8px;
+  background-color: white;
+}
