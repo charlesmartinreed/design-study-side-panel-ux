@@ -24,11 +24,9 @@ html {
   text-transform: uppercase;
 }
 
-.content-header {
-  font-size: 1.8rem;
-  font-weight: 400;
-  letter-spacing: 4px;
-  text-transform: uppercase;
+.panel-header {
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
 .page-container {
@@ -70,10 +68,10 @@ html {
 }
 
 .content-panel .panel-item {
-  width: 500px;
-  height: 300px;
+  min-width: 400px;
+  min-height: 200px;
   border-radius: 8px;
-  background-color: white;
+  background-color: inherit;
   position: relative;
 }
 
@@ -82,13 +80,35 @@ html {
   height: 100%;
   -o-object-fit: cover;
   object-fit: cover;
+  border-radius: 8px;
 }
 
-.content-panel .panel-item {
+.content-panel .panel-item .panel-item-description-container {
   position: absolute;
-  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: black;
+  height: 15%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 1rem;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.panel-item-description-album-artist,
+.panel-item-description-album-title {
+  /* text-transform: uppercase; */
+}
+
+.panel-item-description-album-artist {
+  font-weight: 900;
+}
+
+.panel-item-description-album-title {
+  font-weight: 400;
+  font-style: italic;
 }
