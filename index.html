@@ -12,11 +12,68 @@
       referrerpolicy="no-referrer"
     />
     <link rel="stylesheet" href="./style.css" />
+    <script defer src="./js/script.js"></script>
     <title>Design Study | Side Panel Navigation</title>
   </head>
   <body>
     <div class="library-search-container">
       <input type="text" class="library-search-input" placeholder="What do you want to hear?"/>
+    </div>
+    <div class="modal-album">
+      <div class="modal-details">
+        <div class="modal-album-art">
+          <img
+          src="./images/chapel-hart-girls-are-back-art.jpg"
+          alt="Chapel Hart's The Girls Are Back in Town"
+        />
+        </div>
+      <div class="modal-album-description">
+        <p>Album Name</p>
+        <p>Album Artist</p>
+        <p>Album Genre</p>
+        <p>35 minutes, 8 seconds</p>
+        <p>Release Date</p>
+        <p>Creation Records</p>
+        <p></p>
+      </div>
+      </div>
+      <div class="modal-main">
+        <div class="modal-main-track-item">
+          <p>Track #1</p>
+          <p>03:45</p>
+          <i class="fa-regular fa-heart"></i>
+        </div>
+        <div class="modal-main-track-item">
+          <p>Track #2</p>
+          <p>03:45</p>
+          <i class="fa-regular fa-heart"></i>
+        </div>
+        <div class="modal-main-track-item">
+          <p>Track #3</p>
+          <p>03:45</p>
+          <i class="fa-regular fa-heart"></i>
+        </div>
+        <div class="modal-main-track-item">
+          <p>Track #4</p>
+          <p>03:45</p>
+          <i class="fa-regular fa-heart"></i>
+        </div>
+        <div class="modal-main-track-item">
+          <p>Track #5</p>
+          <p>03:45</p>
+          <i class="fa-regular fa-heart"></i>
+        </div>
+        <div class="modal-main-track-item">
+          <p>Track #6</p>
+          <p>03:45</p>
+          <i class="fa-regular fa-heart"></i>
+        </div>
+        <div class="modal-main-track-item">
+          <p>Track #7</p>
+          <p>03:45</p>
+          <i class="fa-regular fa-heart"></i>
+        </div>
+      </div>
     </div>
     <div class="page-container">
       <div class="nav-panel">
@@ -39,7 +96,7 @@
           <h3 class="panel-header-text">Recently Played</h3>
         </div>
         <div class="panel-items">
-          <div class="panel-item">
+          <div class="panel-item" data-album-id="123456">
             <img
               class="panel-item-art"
               src="./images/chapel-hart-girls-are-back-art.jpg"
@@ -52,7 +109,7 @@
               </p>
           </div>
         </div>
-          <div class="panel-item">
+          <div class="panel-item" data-album-id="234567">
             <img
               class="panel-item-art"
               src="./images/elbow-flying-dream-1-art.jpg"
@@ -65,7 +122,7 @@
               </p>
           </div>
         </div>
-          <div class="panel-item">
+          <div class="panel-item" data-album-id="345678">
             <img
               class="panel-item-art"
               src="./images/fireman-electric-arguments-art.jpg"
@@ -78,7 +135,7 @@
               </p>
           </div>
         </div>
-          <div class="panel-item">
+          <div class="panel-item" data-album-id="456789">
             <img
               class="panel-item-art"
               src="./images/luke-vibert-grit-art.jpg"
@@ -91,7 +148,7 @@
               </p>
           </div>
         </div>
-          <div class="panel-item">
+          <div class="panel-item" data-album-id="567890">
             <img
               class="panel-item-art"
               src="./images/rina-sawayama-hold-the-girl-art.jpg"
@@ -104,7 +161,7 @@
               </p>
           </div>
         </div>
-          <div class="panel-item">
+          <div class="panel-item" data-album-id="678901">
             <img
               class="panel-item-art"
               src="./images/warpaint-radiate-like-this-art.jpg"

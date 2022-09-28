@@ -139,7 +139,8 @@ html {
   scrollbar-width: none;
 }
 
-.panel-items::-webkit-scrollbar {
+.panel-items::-webkit-scrollbar,
+.modal-main::-webkit-scrollbar {
   display: none;
 }
 
@@ -200,6 +201,69 @@ html {
 .panel-item-description-album-title {
   font-weight: 400;
   font-style: italic;
+}
+
+.modal-album {
+  visibility: hidden;
+  max-height: 600px;
+  width: 700px;
+  display: grid;
+  grid-template-rows: 50% 50%;
+  z-index: 999;
+  background-color: rgba(11, 11, 28, 1);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 6px;
+  overflow: none;
+  color: white;
+}
+
+.modal-album.active {
+  visibility: visible;
+}
+
+.modal-album .modal-details img {
+  width: 200px;
+  height: 200px;
+}
+
+.modal-album .modal-details .modal-album-description {
+  font-size: 12px;
+  font-weight: 200;
+  letter-spacing: 1px;
+}
+
+.modal-album .modal-details {
+  width: 95%;
+  justify-self: center;
+  margin: 1rem 0;
+  padding: 1rem 0;
+  border-radius: 8px;
+  background-color: rgba(11, 11, 20, 1);
+  display: grid;
+  justify-items: center;
+  align-items: center;
+  grid-template-columns: 50% 50%;
+}
+
+.modal-main {
+  width: 95%;
+  justify-self: center;
+
+  overflow-y: scroll;
+}
+
+.modal-main-track-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  background-color: rgba(11, 11, 20, 1);
+
+  margin: 6px;
+  border-radius: 6px;
 }
 
 @keyframes animateBorders {
