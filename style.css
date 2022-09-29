@@ -12,7 +12,7 @@ html {
     "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
     sans-serif;
   background-color: var(--deep-blue);
-  color: #b6b6b6;
+  color: white;
 }
 
 .library-search-container {
@@ -44,8 +44,14 @@ html {
 }
 
 .page-container {
-  display: grid;
-  grid-template-columns: 15% minmax(85%, 200%);
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  min-width: 100vw;
+  gap: 1rem;
+
+  /* display: grid; */
+  /* grid-template-columns: 15% minmax(85%, 200%); */
 }
 
 .nav-panel {
@@ -53,10 +59,23 @@ html {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 0.5rem;
-  height: 100vh;
 
+  gap: 2rem;
+  height: 100vh;
+  /* background-color: orange; */
   transition: 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.content-panel {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-panel:hover {
+  padding-right: 150px;
 }
 
 .nav-panel .nav-item {
@@ -75,13 +94,13 @@ html {
   position: relative;
 }
 
-.nav-panel .nav-item::after {
+.nav-panel .nav-item::before {
   display: none;
 
   content: "";
   position: absolute;
   bottom: 10%;
-  left: 0%;
+  left: 10%;
   width: 80%;
   background-color: transparent;
   border-bottom: 8px solid;
@@ -90,23 +109,29 @@ html {
   border-bottom-color: #6759dc;
 }
 
+.nav-panel .nav-item.unfold::after {
+  position: absolute;
+  left: 100%;
+  bottom: 20%;
+  font-size: 22px;
+  letter-spacing: 1px;
+  content: attr(data-section-title);
+  color: inherit;
+
+  animation: 0.8s cubic-bezier(0.46, 0.25, 0.09, 1.15) forwards animateLabels;
+}
+
 .nav-panel .nav-item:hover,
 .nav-panel .nav-item:focus {
   opacity: 0.8;
+
+  animation: 0.8s cubic-bezier(0.46, 0.25, 0.09, 1.15) forwards animateColors;
 }
 
-.nav-panel .nav-item:hover::after,
-.nav-panel .nav-item:focus::after {
+.nav-panel .nav-item:hover::before,
+.nav-panel .nav-item:focus::before {
   display: block;
   animation: 0.8s cubic-bezier(0.46, 0.25, 0.09, 1.15) forwards animateBorders;
-}
-
-.content-panel {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
 }
 
 .panel-header {
@@ -266,6 +291,23 @@ html {
   border-radius: 6px;
 }
 
+@keyframes animateColors {
+  0% {
+    opacity: 0.25;
+    color: white;
+  }
+
+  50% {
+    opacity: 0.5;
+    color: #6759dc;
+  }
+
+  100% {
+    opacity: 1;
+    color: #e04980;
+  }
+}
+
 @keyframes animateBorders {
   from {
     rotate: 0deg;
@@ -277,5 +319,17 @@ html {
     rotate: -90deg;
     opacity: 1;
     border-bottom-color: #e04980;
+  }
+}
+
+@keyframes animateLabels {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
