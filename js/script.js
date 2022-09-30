@@ -8,13 +8,13 @@ let animDelay = 0.2;
 let modalIsActive = false;
 
 // LISTENERS
-albumCards.forEach((albumCard) => {
-  albumCard.addEventListener("click", (e) => {
-    console.log(e.target.parentElement);
-    let id = e.target.parentElement.getAttribute("data-album-id");
-    populateModal(id);
-  });
-});
+// albumCards.forEach((albumCard) => {
+//   albumCard.addEventListener("click", (e) => {
+//     console.log(e.target.parentElement);
+//     let id = e.target.parentElement.getAttribute("data-album-id");
+//     populateModal(id);
+//   });
+// });
 
 navItems.forEach((navItem) => {
   // console.log(navItems.indexOf(navItem));
@@ -46,19 +46,37 @@ function removeNavAnimation() {
 }
 
 window.addEventListener("click", (e) => {
-  if (e.target.classList.contains(".modal-album")) {
-    console.log("modal inner clicked");
-    for (let child of albumModal.children) {
-      if (e.target.matches(child)) {
-        console.log("child clicked");
-        return;
+  if (e.target.parentElement.matches(".panel-item")) {
+    let id = e.target.parentElement.getAttribute("data-album-id");
+    populateModal(id);
+    return;
+  }
+
+  if (modalIsActive) {
+    if (e.target.className === "modal-album active") {
+      return;
+    }
+
+    if (e.target.className !== "modal-album active") {
+      for (const child of albumModal.children) {
+        for (const innerChild of child.children) {
+          if (
+            e.target.className === child.className ||
+            e.target.className === innerChild.className
+          ) {
+            console.log("modal child clicked");
+            return;
+          }
+        }
       }
+      toggleModal();
     }
   }
 });
 
 // MODALS
 function toggleModal() {
+  console.log("modal toggling now");
   modalIsActive = !modalIsActive;
 
   albumModal.classList.toggle("active", modalIsActive);
@@ -74,24 +92,24 @@ function populateModal(albumID) {
 }
 
 function handleModalInForeground() {
-  // document.querySelector("body").style.pointerEvents = "none";
-  let pageBody = document.querySelector(".page-container");
+  // let pageBody = document.querySelector(".page-container");
+  let pageBody = document.querySelector("body");
 
   for (let child of pageBody.children) {
-    // console.log(child);
-    if (modalIsActive === true) {
-      child.style.pointerEvents = "none";
-      child.style.filter = "blur(3px)";
-    }
+    if (child.className !== "modal-album active") {
+      if (modalIsActive === true) {
+        child.style.pointerEvents = "none";
+        child.style.filter = "blur(3px)";
+        child.style.opacity = "0.1";
+        pageBody.style.overflowY = "hidden";
+      }
 
-    if (modalIsActive === false) {
-      child.style.pointerEvents = "all";
-      child.style.filter = "none";
+      if (modalIsActive === false) {
+        child.style.pointerEvents = "all";
+        child.style.filter = "none";
+        child.style.opacity = "1";
+        pageBody.style.overflow = "auto";
+      }
     }
-    // panel-item, nav-panel, 'content-panels
-
-    // console.log(child);
   }
-
-  // document.querySelector("body").style.filter = "blur(3px)";
 }

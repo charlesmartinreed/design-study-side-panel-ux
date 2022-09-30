@@ -4,6 +4,7 @@
   --deep-blue: rgba(3, 3, 18, 1);
   --contrast-blue: rgba(10, 10, 34, 1);
   --light-black: rgb(21, 21, 21, 0.5);
+  --light-black-solid: rgb(21, 21, 21, 1);
   --deep-blue-translucent: rgba(1, 1, 30, 0.5);
   --bezier-with-bounce: cubic-bezier(0.46, 0.25, 0.09, 1.15);
 }
@@ -282,12 +283,15 @@ body {
 
 .modal-album {
   visibility: hidden;
+
   max-height: 600px;
   width: 700px;
   display: grid;
   grid-template-rows: 50% 50%;
   z-index: 999;
   background-color: rgba(11, 11, 20, 1);
+
+  /* background-color: var(--light-black); */
   position: fixed;
   top: 50%;
   left: 50%;
@@ -295,6 +299,7 @@ body {
   border-radius: 6px;
   overflow: none;
   color: white;
+  padding: 1rem 0;
 }
 
 .modal-album.active {
@@ -304,12 +309,18 @@ body {
 .modal-album .modal-details img {
   width: 200px;
   height: 200px;
+  pointer-events: none;
 }
 
-.modal-album .modal-details .modal-album-description {
+.modal-album .modal-details .modal-album-description div {
   font-size: 12px;
   font-weight: 200;
   letter-spacing: 1px;
+}
+
+.modal-album .modal-details .modal-album-description {
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-album .modal-details {
@@ -339,9 +350,19 @@ body {
   padding: 0 1rem;
   align-items: center;
   background-color: var(--light-black);
+  background-color: rgb(103, 89, 220, 0.2);
 
   margin: 6px;
   border-radius: 6px;
+}
+
+.modal-main-track-item div {
+  width: 150px;
+  /* background-color: red; */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
 }
 
 @keyframes animateColors {
