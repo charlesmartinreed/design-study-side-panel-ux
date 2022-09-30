@@ -287,7 +287,7 @@ body {
   display: grid;
   grid-template-rows: 50% 50%;
   z-index: 999;
-  background-color: rgba(11, 11, 28, 1);
+  background-color: rgba(11, 11, 20, 1);
   position: fixed;
   top: 50%;
   left: 50%;
@@ -318,7 +318,7 @@ body {
   margin: 1rem 0;
   padding: 1rem 0;
   border-radius: 8px;
-  background-color: rgba(11, 11, 20, 1);
+  background-color: var(--light-black);
   display: grid;
   justify-items: center;
   align-items: center;
@@ -335,9 +335,10 @@ body {
 .modal-main-track-item {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-between;
+  padding: 0 1rem;
   align-items: center;
-  background-color: rgba(11, 11, 20, 1);
+  background-color: var(--light-black);
 
   margin: 6px;
   border-radius: 6px;
