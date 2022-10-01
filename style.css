@@ -67,6 +67,42 @@ body {
   transition: all 0.2s linear;
 }
 
+.options-panel {
+  background-color: rgba(11, 11, 20, 1);
+
+  position: absolute;
+  height: calc(100vh - 3rem);
+  top: 0%;
+  width: calc(100vw - 250px - 4rem);
+  left: 250px;
+  padding: 1rem;
+  z-index: 1000;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  transform-origin: top left;
+  transition: all 0.3s linear;
+  transform: scale(0);
+  /* padding: 0 1.5rem; */
+
+  /* padding: 1rem 2rem; */
+}
+
+.options-panel.active {
+  transform: scale(1);
+}
+
+.options-panel .btn-options-close {
+  outline: none;
+  background: rgb(103, 89, 220, 0.2);
+  width: 60px;
+  height: 30px;
+  padding: 1rem;
+  color: white;
+}
+
 .page-container {
   display: flex;
   flex-direction: row;
@@ -282,8 +318,6 @@ body {
 }
 
 .modal-album {
-  visibility: hidden;
-
   max-height: 600px;
   width: 700px;
   display: grid;
@@ -291,19 +325,21 @@ body {
   z-index: 999;
   background-color: rgba(11, 11, 20, 1);
 
-  /* background-color: var(--light-black); */
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: scale(0) translate(-50%, -50%);
   border-radius: 6px;
   overflow: none;
   color: white;
   padding: 1rem 0;
+
+  transition: all 0.2s ease-in-out;
+  transform-origin: top left;
 }
 
 .modal-album.active {
-  visibility: visible;
+  transform: scale(1) translate(-50%, -50%);
 }
 
 .modal-album .modal-details img {

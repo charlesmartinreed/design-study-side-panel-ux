@@ -1,35 +1,37 @@
 // ELEMENTS
-const navPanel = document.getElementById("nav-panel");
+const navPanel = document.querySelector("#nav-panel");
 const navItems = document.querySelectorAll(".nav-item");
 const albumCards = document.querySelectorAll(".panel-item");
 const albumModal = document.querySelector(".modal-album");
+const optionsPanel = document.querySelector("#options-panel");
+const optionsPanelCloseBtn = document.querySelector("#btn-options-close");
 
 let animDelay = 0.2;
 let modalIsActive = false;
 
 // LISTENERS
-// albumCards.forEach((albumCard) => {
-//   albumCard.addEventListener("click", (e) => {
-//     console.log(e.target.parentElement);
-//     let id = e.target.parentElement.getAttribute("data-album-id");
-//     populateModal(id);
-//   });
-// });
-
-navItems.forEach((navItem) => {
-  // console.log(navItems.indexOf(navItem));
-  // let animDelay = 0.2;
-  // animDelay += 0.2;
-  // navItem.addEventListener("mouseenter", (e) => {
-  //   triggerNavAnimation();
-  // });
-  // navItem.addEventListener("mouseleave", (e) => {
-  //   removeNavAnimation();
-  // });
+optionsPanelCloseBtn.addEventListener("click", (e) => {
+  removeNavAnimation();
+  optionsPanel.classList.remove("active");
 });
 
-navPanel.addEventListener("mouseenter", triggerNavAnimation);
-navPanel.addEventListener("mouseleave", removeNavAnimation);
+navItems.forEach((navItem) => {
+  navItem.addEventListener("click", (e) => {
+    if (!optionsPanel.classList.contains("active")) {
+      optionsPanel.classList.add("active");
+    }
+  });
+});
+
+navPanel.addEventListener("mouseenter", () => {
+  triggerNavAnimation();
+});
+
+navPanel.addEventListener("mousenter", triggerNavAnimation);
+navPanel.addEventListener("mouseleave", (e) => {
+  if (optionsPanel.classList.contains("active")) return;
+  removeNavAnimation();
+});
 
 function triggerNavAnimation(delay) {
   navItems.forEach((navItem) => {
@@ -37,12 +39,19 @@ function triggerNavAnimation(delay) {
 
     if (!navItem.classList.contains("unfold")) navItem.classList.add("unfold");
   });
+
+  navPanel.style.backgroundColor = `rgba(10, 10, 34, 1)`;
+  navPanel.style.paddingRight = `150px`;
 }
 
 function removeNavAnimation() {
   navItems.forEach((navItem) => {
-    navItem.classList.remove("unfold");
+    if (navItem.classList.contains("unfold"))
+      navItem.classList.remove("unfold");
   });
+
+  navPanel.style.backgroundColor = `initial`;
+  navPanel.style.paddingRight = `0px`;
 }
 
 window.addEventListener("click", (e) => {
