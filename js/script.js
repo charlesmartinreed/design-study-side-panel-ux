@@ -1,23 +1,87 @@
+const navPanelHTMLObjects = {
+  Settings: `<h1 class="options-panel-section-title"></h1>
+  <div class="settings-panel-user-info">
+    <div>
+      <img src="./images/default-profile-photo.jpg" alt="" />
+    </div>
+    <div>
+      <p>Member Name</p>
+      <a href="#!">Membership Status</a>
+    </div>
+  </div>
+  <div class="settings-panel-settings-options">
+    <div class="settings-option">
+      <div>
+        <p>Option A</p>
+      </div>
+      <div>
+        <label class="settings-panel-toggle">
+          <input type="checkbox" />
+          <span class="checkbox-toggle"></span>
+        </label>
+      </div>
+    </div>
+    <div class="settings-option">
+      <div>
+        <p>Option B</p>
+      </div>
+      <div>
+        <label class="settings-panel-toggle">
+          <input type="checkbox" />
+          <span class="checkbox-toggle"></span>
+        </label>
+      </div>
+    </div>
+    <div class="settings-option">
+      <div>
+        <p>Option C</p>
+      </div>
+      <div>
+        <label class="settings-panel-toggle">
+          <input type="checkbox" />
+          <span class="checkbox-toggle"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+  <div>
+    <button class="btn-options-close" id="btn-options-close">X</button>
+  </div>`,
+  Empty: `<h1 class="options-panel-section-title"></h1>
+  <div>
+    <button class="btn-options-close" id="btn-options-close">X</button>
+  </div>`,
+};
+
 // ELEMENTS
 const navPanel = document.querySelector("#nav-panel");
 const navItems = document.querySelectorAll(".nav-item");
 const albumCards = document.querySelectorAll(".panel-item");
 const albumModal = document.querySelector(".modal-album");
 const optionsPanel = document.querySelector("#options-panel");
-const optionsPanelCloseBtn = document.querySelector("#btn-options-close");
 
 let animDelay = 0.2;
 let modalIsActive = false;
 
 // LISTENERS
-optionsPanelCloseBtn.addEventListener("click", (e) => {
-  removeNavAnimation();
-  optionsPanel.classList.remove("active");
-});
 
 navItems.forEach((navItem) => {
   navItem.addEventListener("click", (e) => {
     if (!optionsPanel.classList.contains("active")) {
+      let sectionTitle;
+
+      if (e.target.classList.contains("nav-item")) {
+        sectionTitle = e.target.dataset.sectionTitle;
+      }
+
+      if (e.target.classList.contains("fa-solid")) {
+        sectionTitle = e.target.parentElement.dataset.sectionTitle;
+      }
+
+      let sectionHTML =
+        navPanelHTMLObjects[sectionTitle] ?? navPanelHTMLObjects["Empty"];
+
+      layoutOptionsPanel(sectionHTML, sectionTitle);
       optionsPanel.classList.add("active");
     }
   });
@@ -73,7 +137,6 @@ window.addEventListener("click", (e) => {
             e.target.className === child.className ||
             e.target.className === innerChild.className
           ) {
-            console.log("modal child clicked");
             return;
           }
         }
@@ -85,19 +148,33 @@ window.addEventListener("click", (e) => {
 
 // MODALS
 function toggleModal() {
-  console.log("modal toggling now");
   modalIsActive = !modalIsActive;
 
   albumModal.classList.toggle("active", modalIsActive);
   handleModalInForeground();
 }
 
+function layoutOptionsPanel(html, sectionTitle) {
+  optionsPanel.innerHTML = html;
+
+  optionsPanel.querySelector(".options-panel-section-title").textContent =
+    sectionTitle;
+
+  console.log(
+    optionsPanel.querySelector(".options-panel-section-title").textContent
+  );
+
+  let optionsPanelCloseBtn = document.querySelector("#btn-options-close");
+  optionsPanelCloseBtn.addEventListener("click", (e) => {
+    removeNavAnimation();
+    optionsPanel.classList.remove("active");
+  });
+}
+
 function populateModal(albumID) {
   toggleModal();
   console.log("populating modal", albumID);
   // the artist, album details would be pulled in from an API here...
-
-  // console.log("modal state is now", modalIsActive);
 }
 
 function handleModalInForeground() {

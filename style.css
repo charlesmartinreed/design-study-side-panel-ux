@@ -9,6 +9,17 @@
   --bezier-with-bounce: cubic-bezier(0.46, 0.25, 0.09, 1.15);
 }
 
+a {
+  text-decoration: none;
+  color: rgba(224, 73, 128, 1);
+  font-weight: 700;
+  transition: all 0.2s linear;
+}
+
+a:hover {
+  color: rgba(197, 41, 98, 1);
+}
+
 body,
 html {
   font-family: "Noto Sans", system-ui, -apple-system, BlinkMacSystemFont,
@@ -16,6 +27,7 @@ html {
     sans-serif;
   background-color: var(--deep-blue);
   color: white;
+  letter-spacing: -1px;
 }
 
 body {
@@ -79,8 +91,10 @@ body {
   z-index: 1000;
   border-radius: 10px;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1.5rem;
 
   transform-origin: top left;
   transition: all 0.3s linear;
@@ -95,12 +109,117 @@ body {
 }
 
 .options-panel .btn-options-close {
+  cursor: pointer;
   outline: none;
-  background: rgb(103, 89, 220, 0.2);
+  border: none;
+  background: rgba(103, 89, 220, 0.2);
   width: 60px;
-  height: 30px;
-  padding: 1rem;
+  height: 60px;
+  /* padding: 1rem 2rem; */
   color: white;
+  font-size: 1.6rem;
+  font-weight: 900;
+
+  /* position: fixed; */
+  /* bottom: 5%; */
+  /* left: 50%; */
+  /* transform: translate(-50%, 5%); */
+  border-radius: 50%;
+
+  transition: all 0.3s ease-in-out;
+}
+
+.options-panel .btn-options-close:focus,
+.options-panel .btn-options-close:hover {
+  background-color: rgba(103, 89, 220, 0.5);
+  transform: scale(0.95);
+}
+
+.settings-panel-user-info,
+.settings-panel-settings-options {
+  width: 80%;
+  background-color: var(--light-black);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 1rem 0;
+  border-radius: 8px;
+}
+
+.settings-panel-user-info img {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.settings-panel-settings-options {
+  /* width: 80%; */
+  justify-content: space-evenly;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-option {
+  font-weight: 200;
+  font-size: 22px;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  /* background-color: red; */
+  margin: 0 1rem;
+  width: 90%;
+}
+
+.settings-panel-toggle {
+  position: relative;
+  display: inline-block;
+  height: 30px;
+  width: 60px;
+}
+
+.settings-panel-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.settings-panel-toggle .checkbox-toggle {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(51, 51, 51, 0.7);
+  border-radius: 16px;
+  transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.settings-panel-toggle .checkbox-toggle::before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 4px;
+  bottom: 4px;
+  border-radius: 16px;
+  background-color: #eceeec;
+  transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.settings-panel-toggle input:checked + .checkbox-toggle {
+  background-color: #6759dc;
+}
+
+.settings-panel-toggle input:focus + .checkbox-toggle {
+  box-shadow: 0 0 1px var(--light-black-solid);
+}
+
+.settings-panel-toggle input:checked + .checkbox-toggle::before {
+  transform: translateX(26px);
 }
 
 .page-container {
@@ -213,7 +332,7 @@ body {
   /* background-color: yellow; */
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end;
   text-align: center;
   opacity: 0.5;
 }
