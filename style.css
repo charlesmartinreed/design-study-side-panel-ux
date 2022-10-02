@@ -135,18 +135,97 @@ body {
   transform: scale(0.95);
 }
 
+/* TRENDING PANEL BEGIN */
+/* .trending-panel-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 400px);
+} */
+
+.trending-panel-items {
+  width: 90%;
+  height: 100%;
+  /* background-color: red; */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 300px);
+  gap: 1rem;
+  align-content: flex-start;
+  justify-content: space-around;
+}
+
+.trending-panel-item {
+  cursor: pointer;
+  width: 200px;
+  /* height: 200px; */
+  padding: 2rem;
+  background-color: var(--contrast-blue);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* margin-right: 1rem; */
+
+  /* display: grid; */
+  /* grid-template-columns: repeat(3, 1fr); */
+  /* padding: 1rem; */
+  /* justify-content: space-around; */
+  /* align-items: center; */
+  border-radius: 8px;
+  line-height: 3px;
+  letter-spacing: 0.5px;
+
+  box-shadow: 8px 8px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.4s ease-in-out;
+}
+
+.trending-panel-item:hover {
+  transform: scale(1.12);
+}
+
+.trending-list-item-album-text {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.trending-list-item-artist-text {
+  font-weight: 400;
+  font-size: 15px;
+}
+
+.trending-list-item-trending-in-text {
+  font-size: 15px;
+  color: #e04980;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.trending-list-item-cover {
+  width: 60%;
+  height: 60%;
+  object-fit: contain;
+}
+
+/* TRENDING PANEL END */
+
+/* SETTINGS PANEL BEGIN */
+
 .settings-panel-user-info,
 .settings-panel-settings-options {
   width: 80%;
-  background-color: var(--light-black);
+  /* background-color: var(--light-black); */
   display: flex;
+  /* flex-direction: column; */
   justify-content: space-around;
   align-items: center;
   padding: 1rem 0;
   border-radius: 8px;
 }
 
-.settings-panel-user-info .user-info-profile-pic {
+.settings-panel-user-info {
+  flex-direction: column;
+  height: 80%;
+}
+
+.settings-panel-profile-pane .user-info-profile-pic {
   /* cursor: pointer; */
   width: 150px;
   height: 150px;
@@ -155,27 +234,16 @@ body {
   filter: grayscale(0.75);
 }
 
-.settings-panel-user-info div:first-of-type:hover::after {
+.settings-panel-user-info .settings-panel-profile-pane:hover::after {
   transform: scale(1);
 }
 
-.settings-panel-user-info div:first-of-type {
+.settings-panel-user-info .settings-panel-profile-pane {
   position: relative;
 }
 
-.settings-panel-user-info div:first-of-type::after {
+.settings-panel-user-info .settings-panel-profile-pane::after {
   cursor: pointer;
-  /* content: "Change Photo";
-  display: block;
-  position: absolute;
-  bottom: 0%;
-  left: 0%; */
-  /* background-color: rgba(0, 0, 0, 0.5); */
-  /* background-color: red;
-  width: 150px;
-  height: 40px;
-  border-bottom-left-radius: 50%;
-  border-bottom-right-radius: 50%; */
 
   content: "Change Photo";
   display: flex;
@@ -187,15 +255,16 @@ body {
   text-align: center;
   font-weight: 700;
 
-  bottom: 2.5%;
-  left: 0;
-  height: 98.5%;
+  top: 0%;
+  left: 0%;
+  height: 65%;
   width: 100%;
   transform: scale(0);
 
   color: #e04980;
   background-color: rgba(0, 0, 0, 0.65);
   border-radius: 150px;
+  /* border-radius: 150px; */
 
   transition: all 0.25s ease-in-out;
 }
@@ -267,6 +336,8 @@ body {
 .settings-panel-toggle input:checked + .checkbox-toggle::before {
   transform: translateX(26px);
 }
+
+/* SETTINGS PANEL END */
 
 .page-container {
   display: flex;

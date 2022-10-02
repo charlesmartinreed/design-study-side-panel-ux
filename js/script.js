@@ -1,56 +1,106 @@
 const navPanelHTMLObjects = {
-  Settings: `<h1 class="options-panel-section-title"></h1>
-  <div class="settings-panel-user-info">
+  Settings: {
+    classTitle: "settings-panel-user-info",
+    html: `
+    <div class="settings-panel-profile-pane">
     <div>
-      <img class="user-info-profile-pic" src="./images/default-profile-photo.jpg" alt="" />
-    </div>
-    <div>
-      <p>Member Name</p>
-      <a href="#!">Membership Status</a>
-    </div>
-  </div>
-  <div class="settings-panel-settings-options">
-    <div class="settings-option">
-      <div>
-        <p>Option A</p>
-      </div>
-      <div>
-        <label class="settings-panel-toggle">
-          <input type="checkbox" />
-          <span class="checkbox-toggle"></span>
-        </label>
-      </div>
-    </div>
-    <div class="settings-option">
-      <div>
-        <p>Option B</p>
-      </div>
-      <div>
-        <label class="settings-panel-toggle">
-          <input type="checkbox" />
-          <span class="checkbox-toggle"></span>
-        </label>
-      </div>
-    </div>
-    <div class="settings-option">
-      <div>
-        <p>Option C</p>
-      </div>
-      <div>
-        <label class="settings-panel-toggle">
-          <input type="checkbox" />
-          <span class="checkbox-toggle"></span>
-        </label>
-      </div>
-    </div>
+    <img class="user-info-profile-pic" src="./images/default-profile-photo.jpg" alt="" />
   </div>
   <div>
-    <button class="btn-options-close" id="btn-options-close">X</button>
-  </div>`,
-  Empty: `<h1 class="options-panel-section-title"></h1>
-  <div>
-    <button class="btn-options-close" id="btn-options-close">X</button>
-  </div>`,
+    <p>Member Name</p>
+    <a href="#!">Membership Status</a>
+  </div>
+  </div>
+<div class="settings-panel-settings-options">
+  <div class="settings-option">
+    <div>
+      <p>Option A</p>
+    </div>
+    <div>
+      <label class="settings-panel-toggle">
+        <input type="checkbox" />
+        <span class="checkbox-toggle"></span>
+      </label>
+    </div>
+  </div>
+  <div class="settings-option">
+    <div>
+      <p>Option B</p>
+    </div>
+    <div>
+      <label class="settings-panel-toggle">
+        <input type="checkbox" />
+        <span class="checkbox-toggle"></span>
+      </label>
+    </div>
+  </div>
+  <div class="settings-option">
+    <div>
+      <p>Option C</p>
+    </div>
+    <div>
+      <label class="settings-panel-toggle">
+        <input type="checkbox" />
+        <span class="checkbox-toggle"></span>
+      </label>
+    </div>
+  </div>
+</div>
+`,
+  },
+  Trending: {
+    classTitle: "trending-panel-items",
+    html: `<div class="trending-panel-item">
+  <img
+    src="./images/elbow-flying-dream-1-art.jpg"
+    alt=""
+    class="trending-list-item-cover"
+  />
+  <div class="trending-list-item-description">
+    <p class="trending-list-item-album-text">Album Title</p>
+    <p class="trending-list-item-artist-text">Album Artist</p>
+    <p class="trending-list-item-trending-in-text">Trending in Local</p>
+  </div>
+</div>
+<div class="trending-panel-item">
+  <img
+    src="./images/elbow-flying-dream-1-art.jpg"
+    alt=""
+    class="trending-list-item-cover"
+  />
+  <div class="trending-list-item-description">
+    <p class="trending-list-item-album-text">Album Title</p>
+    <p class="trending-list-item-artist-text">Album Artist</p>
+    <p class="trending-list-item-trending-in-text">Trending in Local</p>
+  </div>
+</div>
+<div class="trending-panel-item">
+  <img
+    src="./images/elbow-flying-dream-1-art.jpg"
+    alt=""
+    class="trending-list-item-cover"
+  />
+  <div class="trending-list-item-description">
+    <p class="trending-list-item-album-text">Album Title</p>
+    <p class="trending-list-item-artist-text">Album Artist</p>
+    <p class="trending-list-item-trending-in-text">Trending in Local</p>
+  </div>
+</div>
+<div class="trending-panel-item">
+  <img
+    src="./images/elbow-flying-dream-1-art.jpg"
+    alt=""
+    class="trending-list-item-cover"
+  />
+  <div class="trending-list-item-description">
+    <p class="trending-list-item-album-text">Album Title</p>
+    <p class="trending-list-item-artist-text">Album Artist</p>
+    <p class="trending-list-item-trending-in-text">Trending in Local</p>
+  </div>
+</div>
+`,
+  },
+  Empty: { classTitle: null, html: null },
 };
 
 // ELEMENTS
@@ -78,10 +128,10 @@ navItems.forEach((navItem) => {
         sectionTitle = e.target.parentElement.dataset.sectionTitle;
       }
 
-      let sectionHTML =
-        navPanelHTMLObjects[sectionTitle] ?? navPanelHTMLObjects["Empty"];
+      let sectionClass = navPanelHTMLObjects[sectionTitle].classTitle;
+      let sectionHTML = navPanelHTMLObjects[sectionTitle].html;
 
-      layoutOptionsPanel(sectionHTML, sectionTitle);
+      layoutOptionsPanel(sectionClass, sectionHTML, sectionTitle);
       optionsPanel.classList.add("active");
     }
   });
@@ -154,21 +204,49 @@ function toggleModal() {
   handleModalInForeground();
 }
 
-function layoutOptionsPanel(html, sectionTitle) {
-  optionsPanel.innerHTML = html;
+function layoutOptionsPanel(sectionClass, sectionHtml, sectionTitle) {
+  let headerElement = document.createElement("h1");
+  headerElement.className = "options-panel-section-title";
+  headerElement.textContent = sectionTitle;
 
-  optionsPanel.querySelector(".options-panel-section-title").textContent =
-    sectionTitle;
+  let contentDiv = document.createElement("div");
+  contentDiv.className = sectionClass;
+  contentDiv.innerHTML = sectionHtml;
 
-  console.log(
-    optionsPanel.querySelector(".options-panel-section-title").textContent
-  );
+  console.log(contentDiv);
 
-  let optionsPanelCloseBtn = document.querySelector("#btn-options-close");
-  optionsPanelCloseBtn.addEventListener("click", (e) => {
+  let buttonContainer = document.createElement("div");
+
+  let closeButtonElement = document.createElement("button");
+  closeButtonElement.className = "btn-options-close";
+  closeButtonElement.id = "btn-options-close";
+  closeButtonElement.textContent = "X";
+
+  buttonContainer.appendChild(closeButtonElement);
+
+  closeButtonElement.addEventListener("click", (e) => {
     removeNavAnimation();
+
+    optionsPanel.removeChild(headerElement);
+    optionsPanel.removeChild(contentDiv);
+    optionsPanel.removeChild(buttonContainer);
+
     optionsPanel.classList.remove("active");
   });
+
+  optionsPanel.appendChild(headerElement);
+  optionsPanel.appendChild(contentDiv);
+  optionsPanel.appendChild(buttonContainer);
+
+  // console.log(contentDiv);
+
+  // optionsPanel.querySelector("#options-panel-dynamic-section").innerHTML = html;
+
+  // console.log(
+  //   optionsPanel.querySelector(".options-panel-section-title").textContent
+  // );
+
+  // let optionsPanelCloseBtn = optionsPanel.querySelector("#btn-options-close");
 }
 
 function populateModal(albumID) {
