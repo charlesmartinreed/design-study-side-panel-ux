@@ -2,7 +2,7 @@ const navPanelHTMLObjects = {
   Settings: `<h1 class="options-panel-section-title"></h1>
   <div class="settings-panel-user-info">
     <div>
-      <img src="./images/default-profile-photo.jpg" alt="" />
+      <img class="user-info-profile-pic" src="./images/default-profile-photo.jpg" alt="" />
     </div>
     <div>
       <p>Member Name</p>
