@@ -7,8 +7,8 @@ const navPanelHTMLObjects = {
     <img class="user-info-profile-pic" src="./images/default-profile-photo.jpg" alt="" />
   </div>
   <div>
-    <p>Member Name</p>
-    <a href="#!">Membership Status</a>
+    <p id="settings-pane-user-name">Member Name</p>
+    <a href="#!" id="settings-pane-user-status">Membership Status</a>
   </div>
   </div>
 <div class="settings-panel-settings-options">
@@ -117,17 +117,25 @@ let modalIsActive = false;
 
 navItems.forEach((navItem) => {
   navItem.addEventListener("click", (e) => {
-    if (!optionsPanel.classList.contains("active")) {
-      let sectionTitle;
+    // console.log(e.target);
+    let clickedNavItem;
 
-      if (e.target.classList.contains("nav-item")) {
-        sectionTitle = e.target.dataset.sectionTitle;
+    if (e.target.classList.contains("nav-item")) {
+      clickedNavItem = e.target;
+    } else {
+      clickedNavItem = e.target.parentElement;
+    }
+
+    if (clickedNavItem.id === "nav-home") {
+      if (optionsPanel.classList.contains("active")) {
+        closeOptionsPanel();
+        removeNavAnimation();
       }
+      return;
+    }
 
-      if (e.target.classList.contains("fa-solid")) {
-        sectionTitle = e.target.parentElement.dataset.sectionTitle;
-      }
-
+    if (clickedNavItem.id !== "nav-home") {
+      let sectionTitle = clickedNavItem.dataset.sectionTitle;
       let sectionClass = navPanelHTMLObjects[sectionTitle].classTitle;
       let sectionHTML = navPanelHTMLObjects[sectionTitle].html;
 
@@ -137,21 +145,19 @@ navItems.forEach((navItem) => {
   });
 });
 
-navPanel.addEventListener("mouseenter", () => {
+navPanel.addEventListener("mouseenter", (e) => {
+  console.log(optionsPanel);
   triggerNavAnimation();
 });
 
-navPanel.addEventListener("mousenter", triggerNavAnimation);
 navPanel.addEventListener("mouseleave", (e) => {
   if (optionsPanel.classList.contains("active")) return;
   removeNavAnimation();
 });
 
-function triggerNavAnimation(delay) {
+function triggerNavAnimation() {
   navItems.forEach((navItem) => {
-    navItem.style.animationDelay = `${delay}s`;
-
-    if (!navItem.classList.contains("unfold")) navItem.classList.add("unfold");
+    navItem.classList.add("unfold");
   });
 
   navPanel.style.backgroundColor = `rgba(10, 10, 34, 1)`;
@@ -160,12 +166,22 @@ function triggerNavAnimation(delay) {
 
 function removeNavAnimation() {
   navItems.forEach((navItem) => {
-    if (navItem.classList.contains("unfold"))
-      navItem.classList.remove("unfold");
-  });
+    navItem.classList.remove("unfold");
 
-  navPanel.style.backgroundColor = `initial`;
-  navPanel.style.paddingRight = `0px`;
+    navPanel.style.backgroundColor = `initial`;
+    navPanel.style.paddingRight = `0px`;
+  });
+}
+
+function closeOptionsPanel() {
+  console.log("closing panel");
+
+  for (const child of optionsPanel.children) {
+    optionsPanel.removeChild(child);
+    console.log("children now", optionsPanel.children);
+  }
+
+  optionsPanel.classList.remove("active");
 }
 
 window.addEventListener("click", (e) => {
@@ -205,48 +221,11 @@ function toggleModal() {
 }
 
 function layoutOptionsPanel(sectionClass, sectionHtml, sectionTitle) {
-  let headerElement = document.createElement("h1");
-  headerElement.className = "options-panel-section-title";
-  headerElement.textContent = sectionTitle;
-
   let contentDiv = document.createElement("div");
   contentDiv.className = sectionClass;
   contentDiv.innerHTML = sectionHtml;
 
-  console.log(contentDiv);
-
-  let buttonContainer = document.createElement("div");
-
-  let closeButtonElement = document.createElement("button");
-  closeButtonElement.className = "btn-options-close";
-  closeButtonElement.id = "btn-options-close";
-  closeButtonElement.textContent = "X";
-
-  buttonContainer.appendChild(closeButtonElement);
-
-  closeButtonElement.addEventListener("click", (e) => {
-    removeNavAnimation();
-
-    optionsPanel.removeChild(headerElement);
-    optionsPanel.removeChild(contentDiv);
-    optionsPanel.removeChild(buttonContainer);
-
-    optionsPanel.classList.remove("active");
-  });
-
-  optionsPanel.appendChild(headerElement);
   optionsPanel.appendChild(contentDiv);
-  optionsPanel.appendChild(buttonContainer);
-
-  // console.log(contentDiv);
-
-  // optionsPanel.querySelector("#options-panel-dynamic-section").innerHTML = html;
-
-  // console.log(
-  //   optionsPanel.querySelector(".options-panel-section-title").textContent
-  // );
-
-  // let optionsPanelCloseBtn = optionsPanel.querySelector("#btn-options-close");
 }
 
 function populateModal(albumID) {
