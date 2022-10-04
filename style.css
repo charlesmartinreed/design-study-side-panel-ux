@@ -89,11 +89,6 @@ body {
   padding: 1rem;
   z-index: 1000;
   border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 1.5rem;
 
   transform-origin: top left;
   transition: all 0.3s linear;
@@ -104,35 +99,10 @@ body {
   transform: scale(1);
 }
 
-.options-panel .btn-options-close {
-  cursor: pointer;
-  outline: none;
-  border: none;
-  background: rgba(103, 89, 220, 0.2);
-  width: 60px;
-  height: 60px;
-  /* padding: 1rem 2rem; */
-  color: white;
-  font-size: 1.6rem;
-  font-weight: 900;
-
-  border-radius: 50%;
-
-  transition: all 0.3s ease-in-out;
-}
-
-.options-panel .btn-options-close:focus,
-.options-panel .btn-options-close:hover {
-  background-color: rgba(103, 89, 220, 0.5);
-  transform: scale(0.95);
-}
-
 /* TRENDING PANEL BEGIN */
-
 .trending-panel-items {
   width: 90%;
   height: 100%;
-  /* background-color: red; */
   display: grid;
   grid-template-columns: repeat(auto-fit, 300px);
   gap: 1rem;
@@ -185,11 +155,9 @@ body {
   height: 60%;
   object-fit: contain;
 }
-
 /* TRENDING PANEL END */
 
 /* SETTINGS PANEL BEGIN */
-
 .settings-panel-user-info {
   display: grid;
   gap: 0.5rem;
@@ -199,16 +167,6 @@ body {
 }
 
 .settings-panel-settings-options {
-  /* width: 80%; */
-  /* background-color: var(--light-black); */
-  /* background-color: orange; */
-  /* display: flex; */
-  /* flex-direction: column; */
-  /* justify-content: space-around; */
-  /* align-items: center; */
-  /* padding: 1rem 0; */
-  /* height: 80%; */
-  /* width: 80%; */
   display: flex;
   flex-direction: column;
 
@@ -219,24 +177,23 @@ body {
 .settings-panel-profile-pane,
 .settings-panel-settings-options {
   border-radius: 8px;
-  /* background-color: orange; */
   background-color: var(--light-black);
+
+  outline: 3px solid;
+  outline-color: var(--deep-blue);
 }
 
 .settings-option {
   font-weight: 200;
   font-size: 25px;
 
-  /* margin: 0 1rem; */
   width: 100%;
-  /* background-color: rebeccapurple; */
   display: flex;
   justify-content: space-evenly;
   align-items: center;
 }
 
 .settings-panel-profile-pane .user-info-profile-pic {
-  /* cursor: pointer; */
   width: 250px;
   height: 250px;
   object-fit: contain;
@@ -256,7 +213,6 @@ body {
   justify-content: center;
   align-items: center;
   text-align: center;
-  /* background-color: red; */
 }
 
 .settings-panel-user-info .settings-panel-profile-pane div:first-of-type {
@@ -347,26 +303,36 @@ body {
 .settings-panel-toggle input:checked + .checkbox-toggle::before {
   transform: translateX(26px);
 }
-
 /* SETTINGS PANEL END */
 
 /* SOCIAL PANEL START */
 .social-panel-settings-pane {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 350px);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
 }
 
 .social-panel {
-  background-color: var(--light-black);
+  outline: 3px solid;
+  outline-color: var(--deep-blue);
+  width: 32%;
+  max-width: 350px;
+  margin: 1%;
+
+  padding: 1rem;
   border-radius: 10px;
-  width: 350px;
-  height: 150px;
-  padding: 1.5rem;
+
   display: flex;
-  justify-content: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  gap: 1rem;
+  justify-content: flex-end;
+  gap: 8px;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  box-shadow: 12px 12px 0px rgba(0, 0, 0, 1);
 }
 
 .social-panel-friend-image {
@@ -375,6 +341,21 @@ body {
   border-radius: 50%;
 }
 
+.social-panel-details {
+  font-size: 14px;
+  letter-spacing: 1px;
+  font-weight: 300;
+  text-align: right;
+}
+
+.social-panel-details span {
+  font-style: italic;
+  font-size: 15px;
+}
+
+.social-panel-details .social-panel-friend-name {
+  font-size: 17px;
+}
 /* SOCIAL PANEL END */
 
 .page-container {
@@ -420,7 +401,7 @@ body {
 .nav-panel:hover {
   padding-right: 150px;
   background-color: var(--contrast-blue);
-  box-shadow: 12px 12px 12px rgba(0, 0, 0, 0.5);
+  box-shadow: 8px 8px 0px rgba(0, 0, 0, 1);
 }
 
 .nav-panel .nav-item {
@@ -642,7 +623,6 @@ body {
   margin: 1rem 0;
   padding: 1rem 0;
   border-radius: 8px;
-  background-color: var(--light-black);
   display: grid;
   justify-items: center;
   align-items: center;

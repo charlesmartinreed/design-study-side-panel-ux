@@ -100,6 +100,71 @@ const navPanelHTMLObjects = {
 </div>
 `,
   },
+  Social: {
+    classTitle: `social-panel-settings-pane`,
+    html: `
+  <div class="social-panel">
+          <div class="social-panel-image">
+            <img
+              class="social-panel-friend-image"
+              src="./images/test_user_profile_img.jpg"
+              alt=""
+            />
+          </div>
+          <div class="social-panel-details">
+            <p class="social-panel-friend-name">
+              <a href="#!">Random User Type Person</a>
+            </p>
+            <p class="social-panel-last-listened-song">
+              Last Listened to <span>Song by Some Music Person</span>
+            </p>
+            <p class="social-panel-last-favorited-item">
+              Last Favorited <span>Album by Another Music Person</span>
+            </p>
+          </div>
+        </div>
+        <div class="social-panel">
+          <div class="social-panel-image">
+            <img
+              class="social-panel-friend-image"
+              src="./images/test_user_profile_img.jpg"
+              alt=""
+            />
+          </div>
+          <div class="social-panel-details">
+            <p class="social-panel-friend-name">
+              <a href="#!">Random User Type Person</a>
+            </p>
+            <p class="social-panel-last-listened-song">
+              Last Listened to <span>Song by Some Music Person</span>
+            </p>
+            <p class="social-panel-last-favorited-item">
+              Last Favorited <span>Album by Another Music Person</span>
+            </p>
+          </div>
+        </div>
+        <div class="social-panel">
+          <div class="social-panel-image">
+            <img
+              class="social-panel-friend-image"
+              src="./images/test_user_profile_img.jpg"
+              alt=""
+            />
+          </div>
+          <div class="social-panel-details">
+            <p class="social-panel-friend-name">
+              <a href="#!">Random User Type Person</a>
+            </p>
+            <p class="social-panel-last-listened-song">
+              Last Listened to <span>Song by Some Music Person</span>
+            </p>
+            <p class="social-panel-last-favorited-item">
+              Last Favorited <span>Album by Another Music Person</span>
+            </p>
+          </div>
+        </div>
+  `,
+  },
   Empty: { classTitle: null, html: null },
 };
 
@@ -119,6 +184,7 @@ navItems.forEach((navItem) => {
   navItem.addEventListener("click", (e) => {
     // console.log(e.target);
     let clickedNavItem;
+    triggerNavAnimation();
 
     if (e.target.classList.contains("nav-item")) {
       clickedNavItem = e.target;
@@ -139,14 +205,17 @@ navItems.forEach((navItem) => {
       let sectionClass = navPanelHTMLObjects[sectionTitle].classTitle;
       let sectionHTML = navPanelHTMLObjects[sectionTitle].html;
 
-      // layoutOptionsPanel(sectionClass, sectionHTML, sectionTitle);
+      if (optionsPanel.classList.contains("active")) {
+        closeOptionsPanel();
+      }
+
+      layoutOptionsPanel(sectionClass, sectionHTML, sectionTitle);
       optionsPanel.classList.add("active");
     }
   });
 });
 
 navPanel.addEventListener("mouseenter", (e) => {
-  console.log(optionsPanel);
   triggerNavAnimation();
 });
 
@@ -182,6 +251,12 @@ function closeOptionsPanel() {
   }
 
   optionsPanel.classList.remove("active");
+  optionsPanel.innerHTML = "";
+
+  console.log(
+    "closing options panel, html now looks like",
+    optionsPanel.innerHTML
+  );
 }
 
 window.addEventListener("click", (e) => {
@@ -222,10 +297,15 @@ function toggleModal() {
 
 function layoutOptionsPanel(sectionClass, sectionHtml, sectionTitle) {
   let contentDiv = document.createElement("div");
+
   contentDiv.className = sectionClass;
   contentDiv.innerHTML = sectionHtml;
 
   optionsPanel.appendChild(contentDiv);
+  console.log(
+    "laying out options panel, html now looks like",
+    optionsPanel.innerHTML
+  );
 }
 
 function populateModal(albumID) {
