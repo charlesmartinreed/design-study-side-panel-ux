@@ -139,7 +139,7 @@ navItems.forEach((navItem) => {
       let sectionClass = navPanelHTMLObjects[sectionTitle].classTitle;
       let sectionHTML = navPanelHTMLObjects[sectionTitle].html;
 
-      layoutOptionsPanel(sectionClass, sectionHTML, sectionTitle);
+      // layoutOptionsPanel(sectionClass, sectionHTML, sectionTitle);
       optionsPanel.classList.add("active");
     }
   });

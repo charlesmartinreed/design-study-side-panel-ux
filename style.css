@@ -350,6 +350,33 @@ body {
 
 /* SETTINGS PANEL END */
 
+/* SOCIAL PANEL START */
+.social-panel-settings-pane {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 350px);
+}
+
+.social-panel {
+  background-color: var(--light-black);
+  border-radius: 10px;
+  width: 350px;
+  height: 150px;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.social-panel-friend-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+
+/* SOCIAL PANEL END */
+
 .page-container {
   display: flex;
   flex-direction: row;
