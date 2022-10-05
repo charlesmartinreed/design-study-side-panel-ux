@@ -100,6 +100,85 @@ const navPanelHTMLObjects = {
 </div>
 `,
   },
+  Collection: {
+    classTitle: "collection-panel-settings-pane",
+    html: `
+  <div class="collection-search-container">
+  <input
+    type="text"
+    class="collection-search-input"
+    placeholder="Search Your Library"
+  />
+</div>
+<div class="collection-panel-panes">
+  <div class="collection-panel-pane" data-album-id="test">
+    <div class="collection-panel-album-cover-container">
+      <img
+        class="collection-panel-album-cover-image"
+        src="./images/fireman-electric-arguments-art.jpg"
+        alt=""
+      />
+    </div>
+    <div class="collection-panel-album-details-container">
+      <p class="collection-panel-album-details-title">Album Title</p>
+      <p class="collection-panel-album-details-artist">Album Artist</p>
+    </div>
+  </div>
+  <div class="collection-panel-pane" data-album-id="test">
+    <div class="collection-panel-album-cover-container">
+      <img
+        class="collection-panel-album-cover-image"
+        src="./images/fireman-electric-arguments-art.jpg"
+        alt=""
+      />
+    </div>
+    <div class="collection-panel-album-details-container">
+      <p class="collection-panel-album-details-title">Album Title</p>
+      <p class="collection-panel-album-details-artist">Album Artist</p>
+    </div>
+  </div>
+  <div class="collection-panel-pane" data-album-id="test">
+    <div class="collection-panel-album-cover-container">
+      <img
+        class="collection-panel-album-cover-image"
+        src="./images/fireman-electric-arguments-art.jpg"
+        alt=""
+      />
+    </div>
+    <div class="collection-panel-album-details-container">
+      <p class="collection-panel-album-details-title">Album Title</p>
+      <p class="collection-panel-album-details-artist">Album Artist</p>
+    </div>
+  </div>
+  <div class="collection-panel-pane" data-album-id="test">
+    <div class="collection-panel-album-cover-container">
+      <img
+        class="collection-panel-album-cover-image"
+        src="./images/fireman-electric-arguments-art.jpg"
+        alt=""
+      />
+    </div>
+    <div class="collection-panel-album-details-container">
+      <p class="collection-panel-album-details-title">Album Title</p>
+      <p class="collection-panel-album-details-artist">Album Artist</p>
+    </div>
+  </div>
+  <div class="collection-panel-pane" data-album-id="test">
+    <div class="collection-panel-album-cover-container">
+      <img
+        class="collection-panel-album-cover-image"
+        src="./images/fireman-electric-arguments-art.jpg"
+        alt=""
+      />
+    </div>
+    <div class="collection-panel-album-details-container">
+      <p class="collection-panel-album-details-title">Album Title</p>
+      <p class="collection-panel-album-details-artist">Album Artist</p>
+    </div>
+  </div>
+</div>
+  `,
+  },
   Social: {
     classTitle: `social-panel-settings-pane`,
     html: `
@@ -215,7 +294,7 @@ navItems.forEach((navItem) => {
   });
 });
 
-navPanel.addEventListener("mouseenter", (e) => {
+navPanel.addEventListener("mouseover", (e) => {
   triggerNavAnimation();
 });
 
@@ -264,6 +343,14 @@ window.addEventListener("click", (e) => {
     let id = e.target.parentElement.getAttribute("data-album-id");
     populateModal(id);
     return;
+  }
+
+  if (
+    e.target.parentElement.matches(".collection-panel-album-cover-container")
+  ) {
+    let id = e.target.parentElement.parentElement.getAttribute("data-album-id");
+    closeOptionsPanel();
+    populateModal(id);
   }
 
   if (modalIsActive) {
