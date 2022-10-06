@@ -49,55 +49,52 @@ const navPanelHTMLObjects = {
 `,
   },
   Trending: {
-    classTitle: "trending-panel-items",
-    html: `<div class="trending-panel-item">
-  <img
-    src="./images/elbow-flying-dream-1-art.jpg"
-    alt=""
-    class="trending-list-item-cover"
-  />
-  <div class="trending-list-item-description">
-    <p class="trending-list-item-album-text">Album Title</p>
-    <p class="trending-list-item-artist-text">Album Artist</p>
-    <p class="trending-list-item-trending-in-text">Trending in Local</p>
-  </div>
-</div>
-<div class="trending-panel-item">
-  <img
-    src="./images/elbow-flying-dream-1-art.jpg"
-    alt=""
-    class="trending-list-item-cover"
-  />
-  <div class="trending-list-item-description">
-    <p class="trending-list-item-album-text">Album Title</p>
-    <p class="trending-list-item-artist-text">Album Artist</p>
-    <p class="trending-list-item-trending-in-text">Trending in Local</p>
-  </div>
-</div>
-<div class="trending-panel-item">
-  <img
-    src="./images/elbow-flying-dream-1-art.jpg"
-    alt=""
-    class="trending-list-item-cover"
-  />
-  <div class="trending-list-item-description">
-    <p class="trending-list-item-album-text">Album Title</p>
-    <p class="trending-list-item-artist-text">Album Artist</p>
-    <p class="trending-list-item-trending-in-text">Trending in Local</p>
-  </div>
-</div>
-<div class="trending-panel-item">
-  <img
-    src="./images/elbow-flying-dream-1-art.jpg"
-    alt=""
-    class="trending-list-item-cover"
-  />
-  <div class="trending-list-item-description">
-    <p class="trending-list-item-album-text">Album Title</p>
-    <p class="trending-list-item-artist-text">Album Artist</p>
-    <p class="trending-list-item-trending-in-text">Trending in Local</p>
-  </div>
-</div>
+    classTitle: "trending-panel-settings-pane",
+    html: `
+    <div class="trending-panel-panes">
+      <div class="trending-panel-pane" data-album-id="test">
+        <div class="trending-panel-album-cover-container">
+      <img
+      src="./images/elbow-flying-dream-1-art.jpg"
+      alt=""
+      class="trending-panel-album-cover-image"
+    />
+      </div>
+        <div class="trending-panel-album-details-container">
+          <p class="trending-panel-album-details-title">Album Title</p>
+          <p class="trending-panel-album-details-artist">Album Artist</p>
+          <p class="trending-panel-album-details-trend">Trending in Local</p>
+        </div>
+      </div>
+      <div class="trending-panel-pane" data-album-id="test">
+      <div class="trending-panel-album-cover-container">
+      <img
+      src="./images/elbow-flying-dream-1-art.jpg"
+      alt=""
+      class="trending-panel-album-cover-image"
+    />
+      </div>
+        <div class="trending-panel-album-details-container">
+          <p class="trending-panel-album-details-title">Album Title</p>
+          <p class="trending-panel-album-details-artist">Album Artist</p>
+          <p class="trending-panel-album-details-trend">Trending in Local</p>
+        </div>
+      </div>
+      <div class="trending-panel-pane" data-album-id="test">
+      <div class="trending-panel-album-cover-container">
+      <img
+      src="./images/elbow-flying-dream-1-art.jpg"
+      alt=""
+      class="trending-panel-album-cover-image"
+    />
+      </div>
+        <div class="trending-panel-album-details-container">
+          <p class="trending-panel-album-details-title">Album Title</p>
+          <p class="trending-panel-album-details-artist">Album Artist</p>
+          <p class="trending-panel-album-details-trend">Trending in Local</p>
+        </div>
+      </div>
+    </div>
 `,
   },
   Collection: {
