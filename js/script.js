@@ -244,6 +244,33 @@ const navPanelHTMLObjects = {
   Empty: { classTitle: null, html: null },
 };
 
+const headlineSections = [
+  {
+    headlineSectionName: "Recents",
+    headlineIcon: `<i
+    class="fa-solid fa-clock"
+    id="panel-header-icon"
+    data-icon-text="Recents"
+  ></i>`,
+  },
+  {
+    headlineSectionName: "Shared",
+    headlineIcon: `<i
+    class="fa-solid fa-share"
+    id="panel-header-icon"
+    data-icon-text="Shared"
+  ></i>`,
+  },
+  {
+    headlineSectionName: "Shouted",
+    headlineIcon: `<i
+    class="fa-solid fa-bullhorn"
+    id="panel-header-icon"
+    data-icon-text="Shouted"
+  ></i>`,
+  },
+];
+
 // ELEMENTS
 const navPanel = document.querySelector("#nav-panel");
 const navItems = document.querySelectorAll(".nav-item");
@@ -251,10 +278,147 @@ const albumCards = document.querySelectorAll(".panel-item");
 const albumModal = document.querySelector(".modal-album");
 const optionsPanel = document.querySelector("#options-panel");
 
+const loader = document.getElementById("loadingScreen");
+
+const loading = new Event("loading");
+const notLoading = new Event("done loading");
+
+const contentPanels = document.querySelector(".content-panels");
+
+// each content panel needs
+// a div.panel-header
+// a div.panel-items
+
+// each panel-items needs
+// a div.panel-item WITH a data-album-id attribute assigned via JS
+
+// each panel-item, needs
+// img.panel-item-art
+// div.panel-item-description-container WITH
+// p.panel-item-description-album-artist
+// p.panel-item-description-album-title
+
+async function populateAlbumPanels() {
+  let iconHTMl = [];
+
+  headlineSections.forEach((sectionObj) => {
+    iconHTMl = [...iconHTMl, sectionObj.headlineIcon];
+  });
+
+  // headlineSections.forEach(section => { for (const [k, v] of Object.entries(section)) {i}})
+
+  let albums = [];
+
+  try {
+    albums = await getAlbumCards();
+  } catch (e) {
+    console.error(e);
+  }
+
+  for (let i = 0; i < headlineSections.length; i++) {
+    let contentPanel = document.createElement("div");
+    contentPanel.className = "content-panel";
+
+    let panelHeader = document.createElement("div");
+    panelHeader.className = "panel-header";
+    panelHeader.innerHTML = iconHTMl[i];
+
+    let panelItems = document.createElement("div");
+    panelItems.className = "panel-items";
+
+    for (let album of albums) {
+      let {
+        id,
+        name,
+        artist,
+        genre,
+        tracks,
+        albumLength,
+        releaseDate,
+        recordLabel,
+        imageURL,
+      } = album;
+
+      let panelItem = document.createElement("div");
+      panelItem.className = "panel-item";
+      panelItem.setAttribute("data-album-id", id);
+
+      let panelItemArt = document.createElement("img");
+      panelItemArt.className = "panel-item-art";
+      panelItemArt.setAttribute("src", imageURL);
+      panelItemArt.setAttribute("alt", `Album cover for ${name}`);
+
+      let panelItemDescContainer = document.createElement("div");
+      panelItemDescContainer.className = "panel-item-description-container";
+
+      let descriptionTextAlbumArtist = document.createElement("p");
+      descriptionTextAlbumArtist.className =
+        "panel-item-description-album-artist";
+      descriptionTextAlbumArtist.textContent = `${artist}`;
+
+      let descriptionTextAlbumTitle = document.createElement("p");
+      descriptionTextAlbumTitle.className =
+        "panel-item-description-album-title";
+      descriptionTextAlbumTitle.textContent = `${name}`;
+
+      [descriptionTextAlbumArtist, descriptionTextAlbumTitle].forEach((desc) =>
+        panelItemDescContainer.appendChild(desc)
+      );
+
+      [panelItemArt, panelItemDescContainer].forEach((item) =>
+        panelItem.appendChild(item)
+      );
+
+      panelItems.appendChild(panelItem);
+    }
+
+    [panelHeader, panelItems].forEach((elem) => contentPanel.appendChild(elem));
+    contentPanels.appendChild(contentPanel);
+  }
+
+  async function getAlbumCards() {
+    let localURL = `http://localhost:5000/api/albums/?limit=${4}`;
+    let remoteURL = `https://album-api-project.onrender.com/api/albums`;
+
+    loader.dispatchEvent(loading);
+
+    let fetchedAlbums;
+
+    try {
+      let res = await fetch(localURL);
+      fetchedAlbums = res.json();
+      loader.dispatchEvent(notLoading);
+    } catch (e) {
+      throw new Error(e);
+    }
+
+    return fetchedAlbums;
+  }
+}
+
+// contentPanels.forEach((contentPanel) => {
+//   contentPanel.innerHTML = populateAlbumCard();
+// });
+
 let animDelay = 0.2;
 let modalIsActive = false;
 
 // LISTENERS
+loader.addEventListener(
+  "loading",
+  (e) => {
+    loader.classList.add("loading");
+  },
+  false
+);
+
+loader.addEventListener(
+  "done loading",
+  (e) => {
+    loader.classList.remove("loading");
+  },
+  false
+);
 
 navItems.forEach((navItem) => {
   navItem.addEventListener("click", (e) => {
@@ -334,6 +498,10 @@ function closeOptionsPanel() {
     optionsPanel.innerHTML
   );
 }
+
+window.addEventListener("DOMContentLoaded", (e) => {
+  populateAlbumPanels();
+});
 
 window.addEventListener("click", (e) => {
   if (e.target.parentElement.matches(".panel-item")) {

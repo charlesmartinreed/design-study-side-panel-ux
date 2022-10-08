@@ -34,6 +34,28 @@ body {
   position: relative;
 }
 
+#loadingScreen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #111;
+  color: rebeccapurple;
+
+  font-size: 6rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  visibility: hidden;
+
+  z-index: 9999;
+}
+
+#loadingScreen.loading {
+  visibility: visible;
+}
+
 .panel-items::-webkit-scrollbar,
 .modal-main::-webkit-scrollbar,
 .content-panels::-webkit-scrollbar,
@@ -643,9 +665,8 @@ body {
 }
 
 .panel-items .panel-item .panel-item-art {
-  width: 100%;
-  height: 100%;
-  -o-object-fit: cover;
+  width: 250px;
+  height: 250px;
   object-fit: cover;
   border-radius: 8px;
 }
@@ -664,6 +685,7 @@ body {
   align-items: center;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
+  text-transform: capitalize;
 
   transition: all 0.1s ease-in;
 }
