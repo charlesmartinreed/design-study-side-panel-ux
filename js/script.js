@@ -285,18 +285,8 @@ const notLoading = new Event("done loading");
 
 const contentPanels = document.querySelector(".content-panels");
 
-// each content panel needs
-// a div.panel-header
-// a div.panel-items
-
-// each panel-items needs
-// a div.panel-item WITH a data-album-id attribute assigned via JS
-
-// each panel-item, needs
-// img.panel-item-art
-// div.panel-item-description-container WITH
-// p.panel-item-description-album-artist
-// p.panel-item-description-album-title
+const baseURLLocal = `http://localhost:5000`;
+const baseURLRemote = `https://album-api-project.onrender.com`;
 
 async function populateAlbumPanels() {
   let iconHTMl = [];
@@ -304,8 +294,6 @@ async function populateAlbumPanels() {
   headlineSections.forEach((sectionObj) => {
     iconHTMl = [...iconHTMl, sectionObj.headlineIcon];
   });
-
-  // headlineSections.forEach(section => { for (const [k, v] of Object.entries(section)) {i}})
 
   let albums = [];
 
@@ -377,16 +365,16 @@ async function populateAlbumPanels() {
   }
 
   async function getAlbumCards() {
-    let localURL = `http://localhost:5000/api/albums/?limit=${4}`;
-    let remoteURL = `https://album-api-project.onrender.com/api/albums`;
-
     loader.dispatchEvent(loading);
+
+    let limit = 4;
+    let URL = `${baseURLLocal}/api/albums/?limit=${limit}`;
 
     let fetchedAlbums;
 
     try {
-      let res = await fetch(localURL);
-      fetchedAlbums = res.json();
+      let res = await fetch(URL);
+      fetchedAlbums = await res.json();
       loader.dispatchEvent(notLoading);
     } catch (e) {
       throw new Error(e);
@@ -395,10 +383,6 @@ async function populateAlbumPanels() {
     return fetchedAlbums;
   }
 }
-
-// contentPanels.forEach((contentPanel) => {
-//   contentPanel.innerHTML = populateAlbumCard();
-// });
 
 let animDelay = 0.2;
 let modalIsActive = false;
@@ -422,7 +406,6 @@ loader.addEventListener(
 
 navItems.forEach((navItem) => {
   navItem.addEventListener("click", (e) => {
-    // console.log(e.target);
     let clickedNavItem;
     triggerNavAnimation();
 
@@ -483,30 +466,22 @@ function removeNavAnimation() {
 }
 
 function closeOptionsPanel() {
-  console.log("closing panel");
-
   for (const child of optionsPanel.children) {
     optionsPanel.removeChild(child);
-    console.log("children now", optionsPanel.children);
   }
 
   optionsPanel.classList.remove("active");
   optionsPanel.innerHTML = "";
-
-  console.log(
-    "closing options panel, html now looks like",
-    optionsPanel.innerHTML
-  );
 }
 
 window.addEventListener("DOMContentLoaded", (e) => {
   populateAlbumPanels();
 });
 
-window.addEventListener("click", (e) => {
+window.addEventListener("click", async (e) => {
   if (e.target.parentElement.matches(".panel-item")) {
     let id = e.target.parentElement.getAttribute("data-album-id");
-    populateModal(id);
+    await populateModal(id);
     return;
   }
 
@@ -515,7 +490,7 @@ window.addEventListener("click", (e) => {
   ) {
     let id = e.target.parentElement.parentElement.getAttribute("data-album-id");
     closeOptionsPanel();
-    populateModal(id);
+    await populateModal(id);
   }
 
   if (modalIsActive) {
@@ -554,20 +529,106 @@ function layoutOptionsPanel(sectionClass, sectionHtml, sectionTitle) {
   contentDiv.innerHTML = sectionHtml;
 
   optionsPanel.appendChild(contentDiv);
-  console.log(
-    "laying out options panel, html now looks like",
-    optionsPanel.innerHTML
-  );
 }
 
-function populateModal(albumID) {
+async function populateModal(albumID) {
+  let URL = `${baseURLLocal}/api/album/${albumID}`;
+  let album;
+
+  loader.dispatchEvent(loading);
+
+  try {
+    let res = await fetch(URL);
+    album = await res.json();
+  } catch (e) {
+    console.error();
+  }
+
+  generateModal(album);
+
+  function generateModal(album) {
+    albumModal.innerHTML = ``;
+
+    let {
+      id,
+      imageURL,
+      name,
+      artist,
+      genre,
+      tracks,
+      albumLength,
+      releaseDate,
+      recordLabel,
+    } = album;
+
+    // releaseDate = new Intl.DateTimeFormat("en-US").format(releaseDate);
+
+    let modalDetailsDiv = document.createElement("div");
+    modalDetailsDiv.className = "modal-details";
+    let modalAlbumArtDiv = document.createElement("div");
+    modalAlbumArtDiv.className = "modal-albumt-art";
+
+    modalAlbumArtDiv.innerHTML = `
+    <img
+    src="${imageURL}"
+    alt="Album cover for ${name} by ${artist}"
+    title="Album cover for ${name} by ${artist}"
+  />
+    `;
+
+    let modalAlbumDescDiv = document.createElement("div");
+    modalAlbumDescDiv.className = "modal-album-description";
+    modalAlbumDescDiv.innerHTML = `
+    <div>
+      <p>${name}</p>
+      <p>${artist}</p>
+      <p>${genre}</p>
+    </div>
+    <div>
+      <p>${tracks.length} tracks</p>
+      <p>${albumLength}</p>
+      <p>${releaseDate}</p>
+      <p>${recordLabel}</p>
+    </div>
+    `;
+
+    let modalMainDiv = document.createElement("div");
+    modalMainDiv.className = "modal-main";
+
+    tracks.forEach(({ title, length, isFavorited }) => {
+      let modalTrackItemDiv = document.createElement("div");
+      modalTrackItemDiv.className = "modal-main-track-item";
+
+      modalTrackItemDiv.innerHTML = `
+      <div>
+        <i class="fa-solid fa-play" id="track-play-button"></i>
+        <p>${title}</p>
+      </div>
+      <div>
+        <p>${length}</p>
+      </div>
+    <div>
+      <i class="fa-regular fa-heart" id="track-like-button"></i>
+    </div>
+      `;
+
+      modalMainDiv.appendChild(modalTrackItemDiv);
+    });
+
+    [modalAlbumArtDiv, modalAlbumDescDiv].forEach((child) =>
+      modalDetailsDiv.appendChild(child)
+    );
+
+    [modalDetailsDiv, modalMainDiv].forEach((modal) =>
+      albumModal.appendChild(modal)
+    );
+
+    loader.dispatchEvent(notLoading);
+  }
   toggleModal();
-  console.log("populating modal", albumID);
-  // the artist, album details would be pulled in from an API here...
 }
 
 function handleModalInForeground() {
-  // let pageBody = document.querySelector(".page-container");
   let pageBody = document.querySelector("body");
 
   for (let child of pageBody.children) {
