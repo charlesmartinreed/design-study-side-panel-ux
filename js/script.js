@@ -178,68 +178,7 @@ const navPanelHTMLObjects = {
   },
   Social: {
     classTitle: `social-panel-settings-pane`,
-    html: `
-  <div class="social-panel">
-          <div class="social-panel-image">
-            <img
-              class="social-panel-friend-image"
-              src="./images/test_user_profile_img.jpg"
-              alt=""
-            />
-          </div>
-          <div class="social-panel-details">
-            <p class="social-panel-friend-name">
-              <a href="#!">Random User Type Person</a>
-            </p>
-            <p class="social-panel-last-listened-song">
-              Last Listened to <span>Song by Some Music Person</span>
-            </p>
-            <p class="social-panel-last-favorited-item">
-              Last Favorited <span>Album by Another Music Person</span>
-            </p>
-          </div>
-        </div>
-        <div class="social-panel">
-          <div class="social-panel-image">
-            <img
-              class="social-panel-friend-image"
-              src="./images/test_user_profile_img.jpg"
-              alt=""
-            />
-          </div>
-          <div class="social-panel-details">
-            <p class="social-panel-friend-name">
-              <a href="#!">Random User Type Person</a>
-            </p>
-            <p class="social-panel-last-listened-song">
-              Last Listened to <span>Song by Some Music Person</span>
-            </p>
-            <p class="social-panel-last-favorited-item">
-              Last Favorited <span>Album by Another Music Person</span>
-            </p>
-          </div>
-        </div>
-        <div class="social-panel">
-          <div class="social-panel-image">
-            <img
-              class="social-panel-friend-image"
-              src="./images/test_user_profile_img.jpg"
-              alt=""
-            />
-          </div>
-          <div class="social-panel-details">
-            <p class="social-panel-friend-name">
-              <a href="#!">Random User Type Person</a>
-            </p>
-            <p class="social-panel-last-listened-song">
-              Last Listened to <span>Song by Some Music Person</span>
-            </p>
-            <p class="social-panel-last-favorited-item">
-              Last Favorited <span>Album by Another Music Person</span>
-            </p>
-          </div>
-        </div>
-  `,
+    html: null,
   },
   Empty: { classTitle: null, html: null },
 };
@@ -405,7 +344,7 @@ loader.addEventListener(
 );
 
 navItems.forEach((navItem) => {
-  navItem.addEventListener("click", (e) => {
+  navItem.addEventListener("click", async (e) => {
     let clickedNavItem;
     triggerNavAnimation();
 
@@ -426,7 +365,7 @@ navItems.forEach((navItem) => {
     if (clickedNavItem.id !== "nav-home") {
       let sectionTitle = clickedNavItem.dataset.sectionTitle;
       let sectionClass = navPanelHTMLObjects[sectionTitle].classTitle;
-      let sectionHTML = navPanelHTMLObjects[sectionTitle].html;
+      let sectionHTML = await generateSettingsPane(sectionTitle);
 
       if (optionsPanel.classList.contains("active")) {
         closeOptionsPanel();
@@ -437,6 +376,69 @@ navItems.forEach((navItem) => {
     }
   });
 });
+
+async function generateSettingsPane(sectionTitle) {
+  switch (sectionTitle) {
+    case "Social":
+      return await generateSocialPane();
+    default:
+      return navPanelHTMLObjects[sectionTitle].html;
+  }
+
+  async function generateSocialPane() {
+    let userCount = 6;
+
+    let URL = `https://randomuser.me/api/?results=${userCount}`;
+    loader.dispatchEvent(loading);
+
+    let usersData;
+
+    try {
+      let res = await fetch(URL);
+      usersData = await res.json();
+      console.log("userData is", usersData["results"]);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      loader.dispatchEvent(notLoading);
+    }
+
+    let panelsHTML = "";
+
+    for (let i = 0; i < userCount; i++) {
+      let user = usersData["results"][i];
+      let {
+        name: { first, last },
+        picture: { medium },
+      } = user;
+
+      let html = `
+        <div class="social-panel">
+        <div class="social-panel-image">
+          <img
+            class="social-panel-friend-image"
+            src="${medium}"
+            alt=""
+          />
+        </div>
+        <div class="social-panel-details">
+          <p class="social-panel-friend-name">
+            <a href="#!">${first} ${last}</a>
+          </p>
+          <p class="social-panel-last-listened-song">
+            Last Listened to <span>Song by Some Music Person</span>
+          </p>
+          <p class="social-panel-last-favorited-item">
+            Last Favorited <span>Album by Another Music Person</span>
+          </p>
+        </div>
+      </div>
+        `;
+      panelsHTML += html;
+    }
+    return panelsHTML;
+  }
+}
 
 navPanel.addEventListener("mouseover", (e) => {
   triggerNavAnimation();
