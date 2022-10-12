@@ -331,6 +331,7 @@ body {
 .social-panel-details span {
   font-style: italic;
   font-size: 15px;
+  text-transform: capitalize;
 }
 
 .social-panel-details .social-panel-friend-name {
@@ -393,6 +394,7 @@ body {
 .trending-panel-album-details-container {
   /* visibility: hidden; */
   line-height: 0.5rem;
+  text-transform: capitalize;
 }
 
 .trending-panel-pane::after {

@@ -300,6 +300,20 @@ async function generateSettingsPane(sectionTitle) {
     let URL = `https://randomuser.me/api/?results=${userCount}`;
     loader.dispatchEvent(loading);
 
+    function getRandomAlbumAttributes() {
+      if (!fetchedAlbums) fetchedAlbums = fetchAlbumsFromAPI();
+
+      let { tracks, artist: trackArtist } =
+        fetchedAlbums[Math.floor(Math.random() * fetchedAlbums.length)];
+
+      let { title: track } = tracks[Math.floor(Math.random() * tracks.length)];
+
+      let { name: album, artist: albumArtist } =
+        fetchedAlbums[Math.floor(Math.random() * fetchedAlbums.length)];
+
+      return { track, trackArtist, album, albumArtist };
+    }
+
     let usersData;
 
     try {
@@ -319,6 +333,8 @@ async function generateSettingsPane(sectionTitle) {
         name: { first, last },
         picture: { medium },
       } = user;
+      let { track, trackArtist, album, albumArtist } =
+        getRandomAlbumAttributes();
 
       let html = `
         <div class="social-panel">
@@ -334,10 +350,10 @@ async function generateSettingsPane(sectionTitle) {
             <a href="#!">${first} ${last}</a>
           </p>
           <p class="social-panel-last-listened-song">
-            Last Listened to <span>Song by Some Music Person</span>
+            Last Listened to <span>${track} by ${trackArtist}</span>
           </p>
           <p class="social-panel-last-favorited-item">
-            Last Favorited <span>Album by Another Music Person</span>
+            Last Favorited <span>${album} by ${albumArtist}</span>
           </p>
         </div>
       </div>
