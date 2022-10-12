@@ -99,82 +99,7 @@ const navPanelHTMLObjects = {
   },
   Collection: {
     classTitle: "collection-panel-settings-pane",
-    html: `
-  <div class="collection-search-container">
-  <input
-    type="text"
-    class="collection-search-input"
-    placeholder="Search Your Library"
-  />
-</div>
-<div class="collection-panel-panes">
-  <div class="collection-panel-pane" data-album-id="test">
-    <div class="collection-panel-album-cover-container">
-      <img
-        class="collection-panel-album-cover-image"
-        src="./images/fireman-electric-arguments-art.jpg"
-        alt=""
-      />
-    </div>
-    <div class="collection-panel-album-details-container">
-      <p class="collection-panel-album-details-title">Album Title</p>
-      <p class="collection-panel-album-details-artist">Album Artist</p>
-    </div>
-  </div>
-  <div class="collection-panel-pane" data-album-id="test">
-    <div class="collection-panel-album-cover-container">
-      <img
-        class="collection-panel-album-cover-image"
-        src="./images/fireman-electric-arguments-art.jpg"
-        alt=""
-      />
-    </div>
-    <div class="collection-panel-album-details-container">
-      <p class="collection-panel-album-details-title">Album Title</p>
-      <p class="collection-panel-album-details-artist">Album Artist</p>
-    </div>
-  </div>
-  <div class="collection-panel-pane" data-album-id="test">
-    <div class="collection-panel-album-cover-container">
-      <img
-        class="collection-panel-album-cover-image"
-        src="./images/fireman-electric-arguments-art.jpg"
-        alt=""
-      />
-    </div>
-    <div class="collection-panel-album-details-container">
-      <p class="collection-panel-album-details-title">Album Title</p>
-      <p class="collection-panel-album-details-artist">Album Artist</p>
-    </div>
-  </div>
-  <div class="collection-panel-pane" data-album-id="test">
-    <div class="collection-panel-album-cover-container">
-      <img
-        class="collection-panel-album-cover-image"
-        src="./images/fireman-electric-arguments-art.jpg"
-        alt=""
-      />
-    </div>
-    <div class="collection-panel-album-details-container">
-      <p class="collection-panel-album-details-title">Album Title</p>
-      <p class="collection-panel-album-details-artist">Album Artist</p>
-    </div>
-  </div>
-  <div class="collection-panel-pane" data-album-id="test">
-    <div class="collection-panel-album-cover-container">
-      <img
-        class="collection-panel-album-cover-image"
-        src="./images/fireman-electric-arguments-art.jpg"
-        alt=""
-      />
-    </div>
-    <div class="collection-panel-album-details-container">
-      <p class="collection-panel-album-details-title">Album Title</p>
-      <p class="collection-panel-album-details-artist">Album Artist</p>
-    </div>
-  </div>
-</div>
-  `,
+    html: null,
   },
   Social: {
     classTitle: `social-panel-settings-pane`,
@@ -218,7 +143,6 @@ const albumModal = document.querySelector(".modal-album");
 const optionsPanel = document.querySelector("#options-panel");
 
 const loader = document.getElementById("loadingScreen");
-
 const loading = new Event("loading");
 const notLoading = new Event("done loading");
 
@@ -227,6 +151,30 @@ const contentPanels = document.querySelector(".content-panels");
 const baseURLLocal = `http://localhost:5000`;
 const baseURLRemote = `https://album-api-project.onrender.com`;
 
+let fetchedAlbums = [];
+
+let animDelay = 0.2;
+let modalIsActive = false;
+
+// LISTENERS
+loader.addEventListener(
+  "loading",
+  (e) => {
+    loader.classList.add("loading");
+  },
+  false
+);
+
+loader.addEventListener(
+  "done loading",
+  (e) => {
+    loader.classList.remove("loading");
+  },
+  false
+);
+
+// METHODS
+
 async function populateAlbumPanels() {
   let iconHTMl = [];
 
@@ -234,10 +182,8 @@ async function populateAlbumPanels() {
     iconHTMl = [...iconHTMl, sectionObj.headlineIcon];
   });
 
-  let albums = [];
-
   try {
-    albums = await getAlbumCards();
+    await fetchAlbumsFromAPI();
   } catch (e) {
     console.error(e);
   }
@@ -253,7 +199,7 @@ async function populateAlbumPanels() {
     let panelItems = document.createElement("div");
     panelItems.className = "panel-items";
 
-    for (let album of albums) {
+    for (let album of fetchedAlbums) {
       let {
         id,
         name,
@@ -302,46 +248,7 @@ async function populateAlbumPanels() {
     [panelHeader, panelItems].forEach((elem) => contentPanel.appendChild(elem));
     contentPanels.appendChild(contentPanel);
   }
-
-  async function getAlbumCards() {
-    loader.dispatchEvent(loading);
-
-    let limit = 4;
-    let URL = `${baseURLLocal}/api/albums/?limit=${limit}`;
-
-    let fetchedAlbums;
-
-    try {
-      let res = await fetch(URL);
-      fetchedAlbums = await res.json();
-      loader.dispatchEvent(notLoading);
-    } catch (e) {
-      throw new Error(e);
-    }
-
-    return fetchedAlbums;
-  }
 }
-
-let animDelay = 0.2;
-let modalIsActive = false;
-
-// LISTENERS
-loader.addEventListener(
-  "loading",
-  (e) => {
-    loader.classList.add("loading");
-  },
-  false
-);
-
-loader.addEventListener(
-  "done loading",
-  (e) => {
-    loader.classList.remove("loading");
-  },
-  false
-);
 
 navItems.forEach((navItem) => {
   navItem.addEventListener("click", async (e) => {
@@ -381,6 +288,8 @@ async function generateSettingsPane(sectionTitle) {
   switch (sectionTitle) {
     case "Social":
       return await generateSocialPane();
+    case "Collection":
+      return await generateCollectionPane();
     default:
       return navPanelHTMLObjects[sectionTitle].html;
   }
@@ -396,7 +305,6 @@ async function generateSettingsPane(sectionTitle) {
     try {
       let res = await fetch(URL);
       usersData = await res.json();
-      console.log("userData is", usersData["results"]);
     } catch (e) {
       console.error(e);
     } finally {
@@ -437,6 +345,67 @@ async function generateSettingsPane(sectionTitle) {
       panelsHTML += html;
     }
     return panelsHTML;
+  }
+
+  async function generateCollectionPane() {
+    if (fetchedAlbums === null || fetchedAlbums.length === 0) {
+      await fetchAlbumsFromAPI();
+    }
+
+    let collectedAlbums = fetchedAlbums.filter(
+      ({ isFavorited }) => isFavorited === true
+    );
+
+    let innerPanelsHTML = ``;
+
+    collectedAlbums.forEach(({ id, name, artist, imageURL }) => {
+      innerPanelsHTML += `
+      <div class="collection-panel-pane" data-album-id="${id}">
+    <div class="collection-panel-album-cover-container">
+      <img
+        class="collection-panel-album-cover-image"
+        src="${imageURL}"
+        alt="Cover art for ${name} by ${artist}"
+      />
+    </div>
+    <div class="collection-panel-album-details-container">
+      <p class="collection-panel-album-details-title">${name}</p>
+      <p class="collection-panel-album-details-artist">${artist}</p>
+    </div>
+  </div>
+      `;
+    });
+
+    let returnedHTML = `
+      <div class="collection-search-container">
+      <input
+      type="text"
+      class="collection-search-input"
+      placeholder="Search Your Library"
+    />
+      </div>
+      <div class="collection-panel-panes">
+      ${innerPanelsHTML}
+      </div>
+    `;
+
+    return returnedHTML;
+  }
+}
+
+async function fetchAlbumsFromAPI(limit) {
+  if (!limit) limit = 8;
+  let URL = `${baseURLLocal}/api/albums/?limit=${limit}`;
+
+  loader.dispatchEvent(loading);
+
+  try {
+    let res = await fetch(URL);
+    fetchedAlbums = await res.json();
+  } catch (e) {
+    console.error(e);
+  } finally {
+    loader.dispatchEvent(notLoading);
   }
 }
 
