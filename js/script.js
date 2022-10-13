@@ -83,29 +83,28 @@ loader.addEventListener(
 // METHODS
 
 async function populateAlbumPanels() {
-  let iconHTMl = [];
-  let albums = [];
-
-  headlineSections.forEach((sectionObj) => {
-    iconHTMl = [...iconHTMl, sectionObj.headlineIcon];
-  });
-
-  try {
-    albums = await fetchAlbumsFromAPI();
-  } catch (e) {
-    console.error(e);
-  }
-
   for (let i = 0; i < headlineSections.length; i++) {
+    let sectionName = headlineSections[i].headlineSectionName;
+    let sectionIcon = headlineSections[i].headlineIcon;
+
     let contentPanel = document.createElement("div");
     contentPanel.className = "content-panel";
 
     let panelHeader = document.createElement("div");
     panelHeader.className = "panel-header";
-    panelHeader.innerHTML = iconHTMl[i];
+    panelHeader.innerHTML = sectionIcon;
 
     let panelItems = document.createElement("div");
     panelItems.className = "panel-items";
+
+    let albums = [];
+    let limit = 3;
+
+    try {
+      albums = await fetchAlbumsFromAPI(limit, null);
+    } catch (e) {
+      console.error(e);
+    }
 
     for (let album of albums) {
       let {
@@ -290,10 +289,7 @@ async function generateSettingsPane(sectionTitle) {
       </div>
     `;
 
-    console.log(returnedHTML);
     return returnedHTML;
-
-    // console.log("these albums are trending", trendingAlbums);
   }
 
   async function generateSocialPane() {
@@ -313,7 +309,6 @@ async function generateSettingsPane(sectionTitle) {
       let { name: album, artist: albumArtist } =
         albums[Math.floor(Math.random() * albums.length)];
 
-      console.log(track, trackArtist, album, albumArtist);
       return { track, trackArtist, album, albumArtist };
     }
 
@@ -428,7 +423,7 @@ async function fetchAlbumsFromAPI(limit = null, path = null) {
 
   try {
     loader.dispatchEvent(loading);
-    console.log("fetching from URL", fetchURL);
+    // console.log("fetching from URL", fetchURL);
 
     let res = await fetch(fetchURL);
     let data = await res.json();
