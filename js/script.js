@@ -1,101 +1,11 @@
 const navPanelHTMLObjects = {
   Settings: {
     classTitle: "settings-panel-user-info",
-    html: `
-    <div class="settings-panel-profile-pane">
-    <div>
-    <img class="user-info-profile-pic" src="./images/default-profile-photo.jpg" alt="" />
-  </div>
-  <div>
-    <p id="settings-pane-user-name">Member Name</p>
-    <a href="#!" id="settings-pane-user-status">Membership Status</a>
-  </div>
-  </div>
-<div class="settings-panel-settings-options">
-  <div class="settings-option">
-    <div>
-      <p>Option A</p>
-    </div>
-    <div>
-      <label class="settings-panel-toggle">
-        <input type="checkbox" />
-        <span class="checkbox-toggle"></span>
-      </label>
-    </div>
-  </div>
-  <div class="settings-option">
-    <div>
-      <p>Option B</p>
-    </div>
-    <div>
-      <label class="settings-panel-toggle">
-        <input type="checkbox" />
-        <span class="checkbox-toggle"></span>
-      </label>
-    </div>
-  </div>
-  <div class="settings-option">
-    <div>
-      <p>Option C</p>
-    </div>
-    <div>
-      <label class="settings-panel-toggle">
-        <input type="checkbox" />
-        <span class="checkbox-toggle"></span>
-      </label>
-    </div>
-  </div>
-</div>
-`,
+    html: null,
   },
   Trending: {
     classTitle: "trending-panel-settings-pane",
-    html: `
-    <div class="trending-panel-panes">
-      <div class="trending-panel-pane" data-album-id="test">
-        <div class="trending-panel-album-cover-container">
-      <img
-      src="./images/elbow-flying-dream-1-art.jpg"
-      alt=""
-      class="trending-panel-album-cover-image"
-    />
-      </div>
-        <div class="trending-panel-album-details-container">
-          <p class="trending-panel-album-details-title">Album Title</p>
-          <p class="trending-panel-album-details-artist">Album Artist</p>
-          <p class="trending-panel-album-details-trend">Trending in Local</p>
-        </div>
-      </div>
-      <div class="trending-panel-pane" data-album-id="test">
-      <div class="trending-panel-album-cover-container">
-      <img
-      src="./images/elbow-flying-dream-1-art.jpg"
-      alt=""
-      class="trending-panel-album-cover-image"
-    />
-      </div>
-        <div class="trending-panel-album-details-container">
-          <p class="trending-panel-album-details-title">Album Title</p>
-          <p class="trending-panel-album-details-artist">Album Artist</p>
-          <p class="trending-panel-album-details-trend">Trending in Local</p>
-        </div>
-      </div>
-      <div class="trending-panel-pane" data-album-id="test">
-      <div class="trending-panel-album-cover-container">
-      <img
-      src="./images/elbow-flying-dream-1-art.jpg"
-      alt=""
-      class="trending-panel-album-cover-image"
-    />
-      </div>
-        <div class="trending-panel-album-details-container">
-          <p class="trending-panel-album-details-title">Album Title</p>
-          <p class="trending-panel-album-details-artist">Album Artist</p>
-          <p class="trending-panel-album-details-trend">Trending in Local</p>
-        </div>
-      </div>
-    </div>
-`,
+    html: null,
   },
   Collection: {
     classTitle: "collection-panel-settings-pane",
@@ -151,9 +61,6 @@ const contentPanels = document.querySelector(".content-panels");
 const baseURLLocal = `http://localhost:5000`;
 const baseURLRemote = `https://album-api-project.onrender.com`;
 
-let fetchedAlbums = [];
-
-let animDelay = 0.2;
 let modalIsActive = false;
 
 // LISTENERS
@@ -177,13 +84,14 @@ loader.addEventListener(
 
 async function populateAlbumPanels() {
   let iconHTMl = [];
+  let albums = [];
 
   headlineSections.forEach((sectionObj) => {
     iconHTMl = [...iconHTMl, sectionObj.headlineIcon];
   });
 
   try {
-    await fetchAlbumsFromAPI();
+    albums = await fetchAlbumsFromAPI();
   } catch (e) {
     console.error(e);
   }
@@ -199,7 +107,7 @@ async function populateAlbumPanels() {
     let panelItems = document.createElement("div");
     panelItems.className = "panel-items";
 
-    for (let album of fetchedAlbums) {
+    for (let album of albums) {
       let {
         id,
         name,
@@ -286,12 +194,106 @@ navItems.forEach((navItem) => {
 
 async function generateSettingsPane(sectionTitle) {
   switch (sectionTitle) {
+    case "Trending":
+      return await generateTrendingPane();
     case "Social":
       return await generateSocialPane();
     case "Collection":
       return await generateCollectionPane();
+    case "Settings":
+      return generateSettings();
     default:
       return navPanelHTMLObjects[sectionTitle].html;
+  }
+
+  function generateSettings() {
+    let html = `
+    <div class="settings-panel-profile-pane">
+    <div>
+    <img class="user-info-profile-pic" src="./images/default-profile-photo.jpg" alt="" />
+  </div>
+  <div>
+    <p id="settings-pane-user-name">Member Name</p>
+    <a href="#!" id="settings-pane-user-status">Membership Status</a>
+  </div>
+  </div>
+<div class="settings-panel-settings-options">
+  <div class="settings-option">
+    <div>
+      <p>Option A</p>
+    </div>
+    <div>
+      <label class="settings-panel-toggle">
+        <input type="checkbox" />
+        <span class="checkbox-toggle"></span>
+      </label>
+    </div>
+  </div>
+  <div class="settings-option">
+    <div>
+      <p>Option B</p>
+    </div>
+    <div>
+      <label class="settings-panel-toggle">
+        <input type="checkbox" />
+        <span class="checkbox-toggle"></span>
+      </label>
+    </div>
+  </div>
+  <div class="settings-option">
+    <div>
+      <p>Option C</p>
+    </div>
+    <div>
+      <label class="settings-panel-toggle">
+        <input type="checkbox" />
+        <span class="checkbox-toggle"></span>
+      </label>
+    </div>
+  </div>
+</div>`;
+    return html;
+  }
+
+  async function generateTrendingPane() {
+    let trendingAlbums = await fetchAlbumsFromAPI(null, "api/albums/trending");
+
+    let innerPanelsHTML = ``;
+
+    trendingAlbums.forEach(({ name, artist, id, imageURL, isTrending }) => {
+      let location = isTrending.locale;
+      let panelHTML = `
+      <div class="trending-panel-pane" data-album-id="${id}">
+        <div class="trending-panel-album-cover-container">
+          <img
+          src="${imageURL}"
+          alt="Cover of ${name} by ${artist}"
+          class="trending-panel-album-cover-image"
+        />
+        </div>
+        <div class="trending-panel-album-details-container">
+          <p class="trending-panel-album-details-title">${name}</p>
+          <p class="trending-panel-album-details-artist">${artist}</p>
+          <p class="trending-panel-album-details-trend">Trending ${location}</p>
+        </div>
+      </div>
+      `;
+      innerPanelsHTML += panelHTML;
+    });
+
+    let returnedHTML = `
+      <div class="trending-panel-panes">
+        <div class="trending-pane-spacer"></div>
+        <div class="trending-pane-wrapper">
+        ${innerPanelsHTML}
+        <div>
+      </div>
+    `;
+
+    console.log(returnedHTML);
+    return returnedHTML;
+
+    // console.log("these albums are trending", trendingAlbums);
   }
 
   async function generateSocialPane() {
@@ -300,17 +302,18 @@ async function generateSettingsPane(sectionTitle) {
     let URL = `https://randomuser.me/api/?results=${userCount}`;
     loader.dispatchEvent(loading);
 
-    function getRandomAlbumAttributes() {
-      if (!fetchedAlbums) fetchedAlbums = fetchAlbumsFromAPI();
+    async function getRandomAlbumAttributes() {
+      let albums = await fetchAlbumsFromAPI();
 
       let { tracks, artist: trackArtist } =
-        fetchedAlbums[Math.floor(Math.random() * fetchedAlbums.length)];
+        albums[Math.floor(Math.random() * albums.length)];
 
       let { title: track } = tracks[Math.floor(Math.random() * tracks.length)];
 
       let { name: album, artist: albumArtist } =
-        fetchedAlbums[Math.floor(Math.random() * fetchedAlbums.length)];
+        albums[Math.floor(Math.random() * albums.length)];
 
+      console.log(track, trackArtist, album, albumArtist);
       return { track, trackArtist, album, albumArtist };
     }
 
@@ -334,7 +337,7 @@ async function generateSettingsPane(sectionTitle) {
         picture: { medium },
       } = user;
       let { track, trackArtist, album, albumArtist } =
-        getRandomAlbumAttributes();
+        await getRandomAlbumAttributes();
 
       let html = `
         <div class="social-panel">
@@ -364,11 +367,9 @@ async function generateSettingsPane(sectionTitle) {
   }
 
   async function generateCollectionPane() {
-    if (fetchedAlbums === null || fetchedAlbums.length === 0) {
-      await fetchAlbumsFromAPI();
-    }
+    let albums = await fetchAlbumsFromAPI();
 
-    let collectedAlbums = fetchedAlbums.filter(
+    let collectedAlbums = albums.filter(
       ({ isFavorited }) => isFavorited === true
     );
 
@@ -401,7 +402,9 @@ async function generateSettingsPane(sectionTitle) {
     />
       </div>
       <div class="collection-panel-panes">
-      ${innerPanelsHTML}
+        <div class="collection-pane-wrapper">
+          ${innerPanelsHTML}
+        </div>
       </div>
     `;
 
@@ -409,15 +412,27 @@ async function generateSettingsPane(sectionTitle) {
   }
 }
 
-async function fetchAlbumsFromAPI(limit) {
-  if (!limit) limit = 8;
-  let URL = `${baseURLLocal}/api/albums/?limit=${limit}`;
+async function fetchAlbumsFromAPI(limit = null, path = null) {
+  let baseURL = `${baseURLLocal}`;
+  let fetchURL;
 
-  loader.dispatchEvent(loading);
+  if (!limit) limit = 8;
+
+  if (path) {
+    fetchURL = `${baseURL}/${path}`;
+  }
+
+  if (!path) {
+    fetchURL = `${baseURLLocal}/api/albums/?limit=${limit}`;
+  }
 
   try {
-    let res = await fetch(URL);
-    fetchedAlbums = await res.json();
+    loader.dispatchEvent(loading);
+    console.log("fetching from URL", fetchURL);
+
+    let res = await fetch(fetchURL);
+    let data = await res.json();
+    return data;
   } catch (e) {
     console.error(e);
   } finally {
