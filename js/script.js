@@ -67,7 +67,7 @@ let modalIsActive = false;
 loader.addEventListener(
   "loading",
   (e) => {
-    loader.classList.add("loading");
+    startLoaderAnimation();
   },
   false
 );
@@ -75,12 +75,44 @@ loader.addEventListener(
 loader.addEventListener(
   "done loading",
   (e) => {
-    loader.classList.remove("loading");
+    stopLoaderAnimation();
   },
   false
 );
 
 // METHODS
+
+function startLoaderAnimation() {
+  for (let i = 1; i < 10; i++) {
+    let animation = [
+      { transform: `scaleY(1)` },
+      { transform: `scaleY(${i * 0.5 + 0.5})` },
+      { transform: `scaleY(-${i * 0.5 + 0.5})` },
+    ];
+
+    let timing = {
+      duration: 100,
+      iterations: Infinity,
+      direction: "alternate-reverse",
+      delay: `${i * 50}`,
+    };
+
+    let loadingDiv = document.createElement("div");
+    loadingDiv.classList.add("loaderDiv");
+    loader.appendChild(loadingDiv);
+
+    loadingDiv.animate(animation, timing);
+  }
+  loader.classList.add("loading");
+}
+
+function stopLoaderAnimation() {
+  for (const child of loader.children) {
+    loader.removeChild(child);
+  }
+
+  loader.classList.remove("loading");
+}
 
 async function populateAlbumPanels() {
   for (let i = 0; i < headlineSections.length; i++) {
@@ -473,6 +505,7 @@ function closeOptionsPanel() {
 
 window.addEventListener("DOMContentLoaded", (e) => {
   populateAlbumPanels();
+  // loader.dispatchEvent(loading);
 });
 
 window.addEventListener("click", async (e) => {
@@ -564,6 +597,7 @@ async function populateModal(albumID) {
     modalDetailsDiv.className = "modal-details";
     let modalAlbumArtDiv = document.createElement("div");
     modalAlbumArtDiv.className = "modal-album-art";
+    console.log("after el", modalAlbumArtDiv.querySelector("::after"));
 
     modalAlbumArtDiv.innerHTML = `
     <img
