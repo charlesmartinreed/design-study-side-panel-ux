@@ -83,6 +83,7 @@ loader.addEventListener(
 // METHODS
 
 function startLoaderAnimation() {
+  console.log("starting loader");
   for (let i = 1; i < 10; i++) {
     let animation = [
       { transform: `scaleY(1)` },
@@ -91,10 +92,10 @@ function startLoaderAnimation() {
     ];
 
     let timing = {
-      duration: 100,
+      duration: 1000,
       iterations: Infinity,
       direction: "alternate-reverse",
-      delay: `${i * 50}`,
+      delay: `${i * 25}`,
     };
 
     let loadingDiv = document.createElement("div");
@@ -107,6 +108,7 @@ function startLoaderAnimation() {
 }
 
 function stopLoaderAnimation() {
+  console.log("stopping loader");
   for (const child of loader.children) {
     loader.removeChild(child);
   }
@@ -115,6 +117,8 @@ function stopLoaderAnimation() {
 }
 
 async function populateAlbumPanels() {
+  loader.dispatchEvent(loading);
+
   for (let i = 0; i < headlineSections.length; i++) {
     let sectionName = headlineSections[i].headlineSectionName;
     let sectionIcon = headlineSections[i].headlineIcon;
@@ -136,6 +140,7 @@ async function populateAlbumPanels() {
       albums = await fetchAlbumsFromAPI(limit, null);
     } catch (e) {
       console.error(e);
+    } finally {
     }
 
     for (let album of albums) {
@@ -187,6 +192,8 @@ async function populateAlbumPanels() {
     [panelHeader, panelItems].forEach((elem) => contentPanel.appendChild(elem));
     contentPanels.appendChild(contentPanel);
   }
+
+  loader.dispatchEvent(notLoading);
 }
 
 navItems.forEach((navItem) => {
@@ -287,6 +294,8 @@ async function generateSettingsPane(sectionTitle) {
   }
 
   async function generateTrendingPane() {
+    loader.dispatchEvent(loading);
+
     let trendingAlbums = await fetchAlbumsFromAPI(null, "api/albums/trending");
 
     let innerPanelsHTML = ``;
@@ -321,6 +330,7 @@ async function generateSettingsPane(sectionTitle) {
       </div>
     `;
 
+    loader.dispatchEvent(notLoading);
     return returnedHTML;
   }
 
@@ -328,6 +338,7 @@ async function generateSettingsPane(sectionTitle) {
     let userCount = 6;
 
     let URL = `https://randomuser.me/api/?results=${userCount}`;
+
     loader.dispatchEvent(loading);
 
     async function getRandomAlbumAttributes() {
@@ -351,8 +362,6 @@ async function generateSettingsPane(sectionTitle) {
       usersData = await res.json();
     } catch (e) {
       console.error(e);
-    } finally {
-      loader.dispatchEvent(notLoading);
     }
 
     let panelsHTML = "";
@@ -390,10 +399,15 @@ async function generateSettingsPane(sectionTitle) {
         `;
       panelsHTML += html;
     }
+
+    loader.dispatchEvent(notLoading);
+
     return panelsHTML;
   }
 
   async function generateCollectionPane() {
+    loader.dispatchEvent(loading);
+
     let albums = await fetchAlbumsFromAPI();
 
     let collectedAlbums = albums.filter(
@@ -435,6 +449,7 @@ async function generateSettingsPane(sectionTitle) {
       </div>
     `;
 
+    loader.dispatchEvent(notLoading);
     return returnedHTML;
   }
 }
@@ -454,7 +469,7 @@ async function fetchAlbumsFromAPI(limit = null, path = null) {
   }
 
   try {
-    loader.dispatchEvent(loading);
+    // loader.dispatchEvent(loading);
     // console.log("fetching from URL", fetchURL);
 
     let res = await fetch(fetchURL);
@@ -463,7 +478,7 @@ async function fetchAlbumsFromAPI(limit = null, path = null) {
   } catch (e) {
     console.error(e);
   } finally {
-    loader.dispatchEvent(notLoading);
+    // loader.dispatchEvent(notLoading);
   }
 }
 
@@ -562,10 +577,10 @@ function layoutOptionsPanel(sectionClass, sectionHtml, sectionTitle) {
 }
 
 async function populateModal(albumID) {
+  loader.dispatchEvent(loading);
+
   let URL = `${baseURLLocal}/api/album/${albumID}`;
   let album;
-
-  loader.dispatchEvent(loading);
 
   try {
     let res = await fetch(URL);
@@ -597,7 +612,6 @@ async function populateModal(albumID) {
     modalDetailsDiv.className = "modal-details";
     let modalAlbumArtDiv = document.createElement("div");
     modalAlbumArtDiv.className = "modal-album-art";
-    console.log("after el", modalAlbumArtDiv.querySelector("::after"));
 
     modalAlbumArtDiv.innerHTML = `
     <img
@@ -653,9 +667,9 @@ async function populateModal(albumID) {
     [modalDetailsDiv, modalMainDiv].forEach((modal) =>
       albumModal.appendChild(modal)
     );
-
-    loader.dispatchEvent(notLoading);
   }
+  loader.dispatchEvent(notLoading);
+
   toggleModal();
 }
 
