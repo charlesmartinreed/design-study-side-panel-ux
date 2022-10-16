@@ -563,7 +563,7 @@ async function populateModal(albumID) {
     let modalDetailsDiv = document.createElement("div");
     modalDetailsDiv.className = "modal-details";
     let modalAlbumArtDiv = document.createElement("div");
-    modalAlbumArtDiv.className = "modal-albumt-art";
+    modalAlbumArtDiv.className = "modal-album-art";
 
     modalAlbumArtDiv.innerHTML = `
     <img

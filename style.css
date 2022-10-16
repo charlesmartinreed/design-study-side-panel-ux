@@ -730,8 +730,10 @@ body {
 }
 
 .modal-album {
-  max-height: 600px;
-  width: 700px;
+  min-height: 80%;
+  height: 80%;
+  min-width: 60%;
+  width: 60%;
   display: grid;
   grid-template-rows: 50% 50%;
   z-index: 999;
@@ -763,6 +765,31 @@ body {
   width: 200px;
   height: 200px;
   pointer-events: none;
+}
+
+.modal-album .modal-details .modal-album-art {
+  position: relative;
+}
+
+.modal-album .modal-details .modal-album-art::after,
+.panel-items .panel-item::after {
+  display: block;
+  content: "❤";
+  position: absolute;
+  top: 0;
+  right: 5%;
+  height: 50px;
+  width: 50px;
+  /* background-color: white; */
+  color: rgba(22, 22, 22, 1);
+  /* opacity: 0.5; */
+  font-size: 2rem;
+
+  cursor: pointer;
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
 }
 
 .modal-album .modal-details .modal-album-description div {
