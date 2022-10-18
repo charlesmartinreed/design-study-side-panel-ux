@@ -268,241 +268,16 @@ navItems.forEach((navItem) => {
     if (clickedNavItem.id !== "nav-home") {
       let sectionTitle = clickedNavItem.dataset.sectionTitle;
       let sectionClass = navPanelHTMLObjects[sectionTitle].classTitle;
-      let sectionHTML = await generateSettingsPane(sectionTitle);
 
       if (optionsPanel.classList.contains("active")) {
         closeOptionsPanel();
       }
 
-      layoutOptionsPanel(sectionClass, sectionHTML, sectionTitle);
+      layoutOptionsPanel(sectionClass, sectionTitle);
       optionsPanel.classList.add("active");
     }
   });
 });
-
-async function generateSettingsPane(sectionTitle) {
-  switch (sectionTitle) {
-    case "Trending":
-      return await generateTrendingPane();
-    case "Social":
-      return await generateSocialPane();
-    case "Collection":
-      return await generateCollectionPane();
-    case "Settings":
-      return generateSettings();
-    default:
-      return navPanelHTMLObjects[sectionTitle].html;
-  }
-
-  function generateSettings() {
-    let html = `
-    <div class="settings-panel-profile-pane">
-    <div>
-    <img class="user-info-profile-pic" src="./images/default-profile-photo.jpg" alt="" />
-  </div>
-  <div>
-    <p id="settings-pane-user-name">Member Name</p>
-    <a href="#!" id="settings-pane-user-status">Membership Status</a>
-  </div>
-  </div>
-<div class="settings-panel-settings-options">
-  <div class="settings-option">
-    <div>
-      <p>Option A</p>
-    </div>
-    <div>
-      <label class="settings-panel-toggle">
-        <input type="checkbox" />
-        <span class="checkbox-toggle"></span>
-      </label>
-    </div>
-  </div>
-  <div class="settings-option">
-    <div>
-      <p>Option B</p>
-    </div>
-    <div>
-      <label class="settings-panel-toggle">
-        <input type="checkbox" />
-        <span class="checkbox-toggle"></span>
-      </label>
-    </div>
-  </div>
-  <div class="settings-option">
-    <div>
-      <p>Option C</p>
-    </div>
-    <div>
-      <label class="settings-panel-toggle">
-        <input type="checkbox" />
-        <span class="checkbox-toggle"></span>
-      </label>
-    </div>
-  </div>
-</div>`;
-    return html;
-  }
-
-  async function generateTrendingPane() {
-    loader.dispatchEvent(loading);
-
-    let trendingAlbums = await fetchAlbumsFromAPI(null, "api/albums/trending");
-
-    let innerPanelsHTML = ``;
-
-    trendingAlbums.forEach(({ name, artist, id, imageURL, isTrending }) => {
-      let location = isTrending.locale;
-      let panelHTML = `
-      <div class="trending-panel-pane" data-album-id="${id}">
-        <div class="trending-panel-album-cover-container">
-          <img
-          src="${imageURL}"
-          alt="Cover of ${name} by ${artist}"
-          class="trending-panel-album-cover-image"
-        />
-        </div>
-        <div class="trending-panel-album-details-container">
-          <p class="trending-panel-album-details-title">${name}</p>
-          <p class="trending-panel-album-details-artist">${artist}</p>
-          <p class="trending-panel-album-details-trend">Trending ${location}</p>
-        </div>
-      </div>
-      `;
-      innerPanelsHTML += panelHTML;
-    });
-
-    let returnedHTML = `
-      <div class="trending-panel-panes">
-        <div class="trending-pane-spacer"></div>
-        <div class="trending-pane-wrapper">
-        ${innerPanelsHTML}
-        <div>
-      </div>
-    `;
-
-    loader.dispatchEvent(notLoading);
-    return returnedHTML;
-  }
-
-  async function generateSocialPane() {
-    let userCount = 6;
-
-    let URL = `https://randomuser.me/api/?results=${userCount}`;
-
-    loader.dispatchEvent(loading);
-
-    async function getRandomAlbumAttributes() {
-      let albums = await fetchAlbumsFromAPI();
-
-      let { tracks, artist: trackArtist } =
-        albums[Math.floor(Math.random() * albums.length)];
-
-      let { title: track } = tracks[Math.floor(Math.random() * tracks.length)];
-
-      let { name: album, artist: albumArtist } =
-        albums[Math.floor(Math.random() * albums.length)];
-
-      return { track, trackArtist, album, albumArtist };
-    }
-
-    let usersData;
-
-    try {
-      let res = await fetch(URL);
-      usersData = await res.json();
-    } catch (e) {
-      console.error(e);
-    }
-
-    let panelsHTML = "";
-
-    for (let i = 0; i < userCount; i++) {
-      let user = usersData["results"][i];
-      let {
-        name: { first, last },
-        picture: { medium },
-      } = user;
-      let { track, trackArtist, album, albumArtist } =
-        await getRandomAlbumAttributes();
-
-      let html = `
-        <div class="social-panel">
-        <div class="social-panel-image">
-          <img
-            class="social-panel-friend-image"
-            src="${medium}"
-            alt=""
-          />
-        </div>
-        <div class="social-panel-details">
-          <p class="social-panel-friend-name">
-            <a href="#!">${first} ${last}</a>
-          </p>
-          <p class="social-panel-last-listened-song">
-            Last Listened to <span>${track} by ${trackArtist}</span>
-          </p>
-          <p class="social-panel-last-favorited-item">
-            Last Favorited <span>${album} by ${albumArtist}</span>
-          </p>
-        </div>
-      </div>
-        `;
-      panelsHTML += html;
-    }
-
-    loader.dispatchEvent(notLoading);
-
-    return panelsHTML;
-  }
-
-  async function generateCollectionPane() {
-    loader.dispatchEvent(loading);
-
-    let albums = await fetchAlbumsFromAPI();
-
-    let collectedAlbums = albums.filter(
-      ({ isFavorited }) => isFavorited === true
-    );
-
-    let innerPanelsHTML = ``;
-
-    collectedAlbums.forEach(({ id, name, artist, imageURL }) => {
-      innerPanelsHTML += `
-      <div class="collection-panel-pane" data-album-id="${id}">
-    <div class="collection-panel-album-cover-container">
-      <img
-        class="collection-panel-album-cover-image"
-        src="${imageURL}"
-        alt="Cover art for ${name} by ${artist}"
-      />
-    </div>
-    <div class="collection-panel-album-details-container">
-      <p class="collection-panel-album-details-title">${name}</p>
-      <p class="collection-panel-album-details-artist">${artist}</p>
-    </div>
-  </div>
-      `;
-    });
-
-    let returnedHTML = `
-      <div class="collection-search-container">
-      <input
-      type="text"
-      class="collection-search-input"
-      placeholder="Search Your Library"
-    />
-      </div>
-      <div class="collection-panel-panes">
-        <div class="collection-pane-wrapper">
-          ${innerPanelsHTML}
-        </div>
-      </div>
-    `;
-
-    loader.dispatchEvent(notLoading);
-    return returnedHTML;
-  }
-}
 
 async function fetchAlbumsFromAPI(limit = null, path = null) {
   let baseURL = `${baseURLLocal}`;
@@ -619,13 +394,243 @@ function toggleModal() {
   handleModalInForeground();
 }
 
-function layoutOptionsPanel(sectionClass, sectionHtml, sectionTitle) {
+async function layoutOptionsPanel(sectionClass, sectionTitle) {
+  let sectionHTML = await generateSettingsPane(sectionTitle);
+
   let contentDiv = document.createElement("div");
 
   contentDiv.className = sectionClass;
-  contentDiv.innerHTML = sectionHtml;
+  contentDiv.innerHTML = sectionHTML;
 
   optionsPanel.appendChild(contentDiv);
+
+  async function generateSettingsPane(sectionTitle) {
+    switch (sectionTitle) {
+      case "Trending":
+        return await generateTrendingPane();
+      case "Social":
+        return await generateSocialPane();
+      case "Collection":
+        return await generateCollectionPane();
+      case "Settings":
+        return generateSettings();
+      default:
+        return navPanelHTMLObjects[sectionTitle].html;
+    }
+
+    function generateSettings() {
+      let html = `
+      <div class="settings-panel-profile-pane">
+      <div>
+      <img class="user-info-profile-pic" src="./images/default-profile-photo.jpg" alt="" />
+    </div>
+    <div>
+      <p id="settings-pane-user-name">Member Name</p>
+      <a href="#!" id="settings-pane-user-status">Membership Status</a>
+    </div>
+    </div>
+  <div class="settings-panel-settings-options">
+    <div class="settings-option">
+      <div>
+        <p>Option A</p>
+      </div>
+      <div>
+        <label class="settings-panel-toggle">
+          <input type="checkbox" />
+          <span class="checkbox-toggle"></span>
+        </label>
+      </div>
+    </div>
+    <div class="settings-option">
+      <div>
+        <p>Option B</p>
+      </div>
+      <div>
+        <label class="settings-panel-toggle">
+          <input type="checkbox" />
+          <span class="checkbox-toggle"></span>
+        </label>
+      </div>
+    </div>
+    <div class="settings-option">
+      <div>
+        <p>Option C</p>
+      </div>
+      <div>
+        <label class="settings-panel-toggle">
+          <input type="checkbox" />
+          <span class="checkbox-toggle"></span>
+        </label>
+      </div>
+    </div>
+  </div>`;
+      return html;
+    }
+
+    async function generateTrendingPane() {
+      loader.dispatchEvent(loading);
+
+      let trendingAlbums = await fetchAlbumsFromAPI(
+        null,
+        "api/albums/trending"
+      );
+
+      let innerPanelsHTML = ``;
+
+      trendingAlbums.forEach(({ name, artist, id, imageURL, isTrending }) => {
+        let location = isTrending.locale;
+        let panelHTML = `
+        <div class="trending-panel-pane" data-album-id="${id}">
+          <div class="trending-panel-album-cover-container">
+            <img
+            src="${imageURL}"
+            alt="Cover of ${name} by ${artist}"
+            class="trending-panel-album-cover-image"
+          />
+          </div>
+          <div class="trending-panel-album-details-container">
+            <p class="trending-panel-album-details-title">${name}</p>
+            <p class="trending-panel-album-details-artist">${artist}</p>
+            <p class="trending-panel-album-details-trend">Trending ${location}</p>
+          </div>
+        </div>
+        `;
+        innerPanelsHTML += panelHTML;
+      });
+
+      let returnedHTML = `
+        <div class="trending-panel-panes">
+          <div class="trending-pane-spacer"></div>
+          <div class="trending-pane-wrapper">
+          ${innerPanelsHTML}
+          <div>
+        </div>
+      `;
+
+      loader.dispatchEvent(notLoading);
+      return returnedHTML;
+    }
+
+    async function generateSocialPane() {
+      let userCount = 6;
+
+      let URL = `https://randomuser.me/api/?results=${userCount}`;
+
+      loader.dispatchEvent(loading);
+
+      async function getRandomAlbumAttributes() {
+        let albums = await fetchAlbumsFromAPI();
+
+        let { tracks, artist: trackArtist } =
+          albums[Math.floor(Math.random() * albums.length)];
+
+        let { title: track } =
+          tracks[Math.floor(Math.random() * tracks.length)];
+
+        let { name: album, artist: albumArtist } =
+          albums[Math.floor(Math.random() * albums.length)];
+
+        return { track, trackArtist, album, albumArtist };
+      }
+
+      let usersData;
+
+      try {
+        let res = await fetch(URL);
+        usersData = await res.json();
+      } catch (e) {
+        console.error(e);
+      }
+
+      let panelsHTML = "";
+
+      for (let i = 0; i < userCount; i++) {
+        let user = usersData["results"][i];
+        let {
+          name: { first, last },
+          picture: { medium },
+        } = user;
+        let { track, trackArtist, album, albumArtist } =
+          await getRandomAlbumAttributes();
+
+        let html = `
+          <div class="social-panel">
+          <div class="social-panel-image">
+            <img
+              class="social-panel-friend-image"
+              src="${medium}"
+              alt=""
+            />
+          </div>
+          <div class="social-panel-details">
+            <p class="social-panel-friend-name">
+              <a href="#!">${first} ${last}</a>
+            </p>
+            <p class="social-panel-last-listened-song">
+              Last Listened to <span>${track} by ${trackArtist}</span>
+            </p>
+            <p class="social-panel-last-favorited-item">
+              Last Favorited <span>${album} by ${albumArtist}</span>
+            </p>
+          </div>
+        </div>
+          `;
+        panelsHTML += html;
+      }
+
+      loader.dispatchEvent(notLoading);
+
+      return panelsHTML;
+    }
+
+    async function generateCollectionPane() {
+      loader.dispatchEvent(loading);
+
+      let albums = await fetchAlbumsFromAPI();
+
+      let collectedAlbums = albums.filter(
+        ({ isFavorited }) => isFavorited === true
+      );
+
+      let innerPanelsHTML = ``;
+
+      collectedAlbums.forEach(({ id, name, artist, imageURL }) => {
+        innerPanelsHTML += `
+        <div class="collection-panel-pane" data-album-id="${id}">
+      <div class="collection-panel-album-cover-container">
+        <img
+          class="collection-panel-album-cover-image"
+          src="${imageURL}"
+          alt="Cover art for ${name} by ${artist}"
+        />
+      </div>
+      <div class="collection-panel-album-details-container">
+        <p class="collection-panel-album-details-title">${name}</p>
+        <p class="collection-panel-album-details-artist">${artist}</p>
+      </div>
+    </div>
+        `;
+      });
+
+      let returnedHTML = `
+        <div class="collection-search-container">
+        <input
+        type="text"
+        class="collection-search-input"
+        placeholder="Search Your Library"
+      />
+        </div>
+        <div class="collection-panel-panes">
+          <div class="collection-pane-wrapper">
+            ${innerPanelsHTML}
+          </div>
+        </div>
+      `;
+
+      loader.dispatchEvent(notLoading);
+      return returnedHTML;
+    }
+  }
 }
 
 async function populateModal(albumID) {
