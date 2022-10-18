@@ -715,10 +715,22 @@ body {
   transition: all 0.1s ease-in;
 }
 
+.panel-item-fav-container.liked i,
+.modal-fav-container.liked i {
+  color: green;
+}
+
 .panel-items .panel-item:hover > .panel-item-description-container,
 .panel-items .panel-item:focus > .panel-item-description-container {
   opacity: 1;
   font-size: 13px;
+}
+
+.panel-items .panel-item:hover > .panel-item-fav-container,
+.panel-items .panel-item:focus > .panel-item-fav-container,
+.modal-album .modal-details .modal-album-art:hover .modal-fav-container,
+.modal-album .modal-details .modal-album-art:focus .modal-fav-container {
+  opacity: 1;
 }
 
 .panel-items .panel-item-description-album-artist,
@@ -779,8 +791,34 @@ body {
   position: relative;
 }
 
-.modal-album .modal-details .modal-album-art::after,
-.panel-items .panel-item::after {
+.panel-items .panel-item .panel-item-fav-container,
+.modal-album .modal-details .modal-album-art .modal-fav-container {
+  opacity: 0;
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 1%;
+  height: 50px;
+  width: 50px;
+  font-size: 2rem;
+  color: white;
+
+  cursor: pointer;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transition: all 0.1s ease-in;
+}
+
+.panel-items .panel-item .panel-item-fav-container i,
+.modal-album .modal-details .modal-album-art .modal-fav-container i {
+  text-shadow: 3px 4px 12px rgba(0, 0, 0, 1);
+}
+
+/* .panel-items .panel-item::after */
+/* .modal-album .modal-details .modal-album-art::after {
   display: block;
   content: "❤";
   position: absolute;
@@ -788,9 +826,9 @@ body {
   right: 5%;
   height: 50px;
   width: 50px;
-  /* background-color: white; */
+  background-color: white;
   color: rgba(22, 22, 22, 1);
-  /* opacity: 0.5; */
+  opacity: 0.5;
   font-size: 2rem;
 
   cursor: pointer;
@@ -798,7 +836,7 @@ body {
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
-}
+} */
 
 .modal-album .modal-details .modal-album-description div {
   font-size: 12px;

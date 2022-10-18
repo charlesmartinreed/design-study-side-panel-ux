@@ -154,11 +154,18 @@ async function populateAlbumPanels() {
         releaseDate,
         recordLabel,
         imageURL,
+        isFavorited,
       } = album;
 
       let panelItem = document.createElement("div");
       panelItem.className = "panel-item";
       panelItem.setAttribute("data-album-id", id);
+
+      let panelFavContainer = document.createElement("div");
+      panelFavContainer.className = "panel-item-fav-container";
+      panelFavContainer.innerHTML = `<i class="fa-solid fa-heart" id="track-like-button"></i>`;
+      panelFavContainer.classList.toggle("liked", isFavorited === true);
+      panelItem.appendChild(panelFavContainer);
 
       let panelItemArt = document.createElement("img");
       panelItemArt.className = "panel-item-art";
@@ -186,6 +193,8 @@ async function populateAlbumPanels() {
         panelItem.appendChild(item)
       );
 
+      handleFavContainer(panelFavContainer, id);
+
       panelItems.appendChild(panelItem);
     }
 
@@ -194,6 +203,47 @@ async function populateAlbumPanels() {
   }
 
   loader.dispatchEvent(notLoading);
+}
+
+function handleFavContainer(container, id) {
+  container.addEventListener("click", async (e) => {
+    let parent = e.target.parentElement;
+    // let grandparent = parent.parentElement;
+
+    console.log(parent);
+    // console.log(grandparent);
+
+    // let id = grandparent.getAttribute("data-album-id");
+    let currentState = parent.classList.contains("liked");
+    console.log("before click liked state is", currentState);
+
+    try {
+      let res = await toggleAlbumInCollection(id, currentState);
+      if (res.ok) currentState = !currentState;
+    } catch (e) {
+      console.error(e);
+    } finally {
+      parent.classList.toggle("liked", currentState);
+    }
+  });
+}
+
+async function toggleAlbumInCollection(id, currentState) {
+  let URL = `${baseURLLocal}/api/album/${id}`;
+  let data = { prop: "isFavorited", value: !currentState };
+  console.log("sending data", data);
+
+  try {
+    let res = await fetch(URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    return res;
+  } catch (e) {
+    console.error(e);
+    throw new Error("failed to update collection");
+  }
 }
 
 navItems.forEach((navItem) => {
@@ -526,6 +576,8 @@ window.addEventListener("DOMContentLoaded", (e) => {
 window.addEventListener("click", async (e) => {
   if (e.target.parentElement.matches(".panel-item")) {
     let id = e.target.parentElement.getAttribute("data-album-id");
+
+    console.log(e.target);
     await populateModal(id);
     return;
   }
@@ -604,14 +656,24 @@ async function populateModal(albumID) {
       albumLength,
       releaseDate,
       recordLabel,
+      isFavorited,
     } = album;
 
     // releaseDate = new Intl.DateTimeFormat("en-US").format(releaseDate);
 
     let modalDetailsDiv = document.createElement("div");
     modalDetailsDiv.className = "modal-details";
+
     let modalAlbumArtDiv = document.createElement("div");
     modalAlbumArtDiv.className = "modal-album-art";
+
+    let modalFavContainer = document.createElement("div");
+    modalFavContainer.className = "modal-fav-container";
+
+    modalFavContainer.classList.toggle("liked", isFavorited === true);
+
+    modalFavContainer.innerHTML = `<i class="fa-solid fa-heart" id="track-like-button"></i>
+    </div>`;
 
     modalAlbumArtDiv.innerHTML = `
     <img
@@ -620,6 +682,8 @@ async function populateModal(albumID) {
     title="Album cover for ${name} by ${artist}"
   />
     `;
+
+    modalAlbumArtDiv.appendChild(modalFavContainer);
 
     let modalAlbumDescDiv = document.createElement("div");
     modalAlbumDescDiv.className = "modal-album-description";
@@ -640,6 +704,8 @@ async function populateModal(albumID) {
     let modalMainDiv = document.createElement("div");
     modalMainDiv.className = "modal-main";
 
+    handleFavContainer(modalFavContainer, id);
+
     tracks.forEach(({ title, length, isFavorited }) => {
       let modalTrackItemDiv = document.createElement("div");
       modalTrackItemDiv.className = "modal-main-track-item";
@@ -653,7 +719,7 @@ async function populateModal(albumID) {
         <p>${length}</p>
       </div>
     <div>
-      <i class="fa-regular fa-heart" id="track-like-button"></i>
+      <i class="fa-solid fa-heart" id="track-like-button"></i>
     </div>
       `;
 
