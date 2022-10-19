@@ -715,6 +715,11 @@ body {
   transition: all 0.1s ease-in;
 }
 
+.panel-items .panel-item .panel-item-fav-container.liked,
+.modal-album .modal-details .modal-album-art .modal-fav-container.liked {
+  opacity: 1;
+}
+
 .panel-item-fav-container.liked i,
 .modal-fav-container.liked i {
   color: green;

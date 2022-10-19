@@ -83,7 +83,6 @@ loader.addEventListener(
 // METHODS
 
 function startLoaderAnimation() {
-  console.log("starting loader");
   for (let i = 1; i < 10; i++) {
     let animation = [
       { transform: `scaleY(1)` },
@@ -108,7 +107,6 @@ function startLoaderAnimation() {
 }
 
 function stopLoaderAnimation() {
-  console.log("stopping loader");
   for (const child of loader.children) {
     loader.removeChild(child);
   }
@@ -209,13 +207,9 @@ function handleFavContainer(container, id) {
   container.addEventListener("click", async (e) => {
     let parent = e.target.parentElement;
     // let grandparent = parent.parentElement;
-
-    console.log(parent);
-    // console.log(grandparent);
-
     // let id = grandparent.getAttribute("data-album-id");
+
     let currentState = parent.classList.contains("liked");
-    console.log("before click liked state is", currentState);
 
     try {
       let res = await toggleAlbumInCollection(id, currentState);
@@ -231,7 +225,6 @@ function handleFavContainer(container, id) {
 async function toggleAlbumInCollection(id, currentState) {
   let URL = `${baseURLLocal}/api/album/${id}`;
   let data = { prop: "isFavorited", value: !currentState };
-  console.log("sending data", data);
 
   try {
     let res = await fetch(URL, {
@@ -294,16 +287,11 @@ async function fetchAlbumsFromAPI(limit = null, path = null) {
   }
 
   try {
-    // loader.dispatchEvent(loading);
-    // console.log("fetching from URL", fetchURL);
-
     let res = await fetch(fetchURL);
     let data = await res.json();
     return data;
   } catch (e) {
     console.error(e);
-  } finally {
-    // loader.dispatchEvent(notLoading);
   }
 }
 
@@ -352,7 +340,6 @@ window.addEventListener("click", async (e) => {
   if (e.target.parentElement.matches(".panel-item")) {
     let id = e.target.parentElement.getAttribute("data-album-id");
 
-    console.log(e.target);
     await populateModal(id);
     return;
   }
@@ -366,21 +353,8 @@ window.addEventListener("click", async (e) => {
   }
 
   if (modalIsActive) {
-    if (e.target.className === "modal-album active") {
-      return;
-    }
-
-    if (e.target.className !== "modal-album active") {
-      for (const child of albumModal.children) {
-        for (const innerChild of child.children) {
-          if (
-            e.target.className === child.className ||
-            e.target.className === innerChild.className
-          ) {
-            return;
-          }
-        }
-      }
+    if (e.target.matches("body")) {
+      console.log("body clicked, closing");
       toggleModal();
     }
   }
