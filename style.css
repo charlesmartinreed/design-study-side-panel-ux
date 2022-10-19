@@ -64,6 +64,99 @@ body {
   visibility: visible;
 }
 
+#player-panel {
+  background-color: rgba(13, 13, 13, 1);
+  width: 100%;
+  height: 0px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  padding: 0.5rem 2rem;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  transform: scale(0);
+  transform-origin: bottom left;
+  transition: all 0.2s var(--bezier-with-bounce);
+  z-index: 2000;
+
+  box-shadow: -3px -3px 12px rgba(0, 0, 0, 0.5);
+}
+
+#player-panel.playing-track {
+  height: 60px;
+  transform: scale(1);
+}
+
+#player-panel .current-track-image {
+  height: 50px;
+  width: 50px;
+  border-radius: 2px;
+}
+
+#player-panel .current-track-title,
+#player-panel .current-track-artist {
+  letter-spacing: 0.15px;
+  font-size: 14px;
+  text-transform: capitalize;
+}
+
+#player-panel .current-track-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: #6759dc;
+}
+
+#player-panel .player-playback-buttons {
+  cursor: pointer;
+  color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#player-panel .player-playback-buttons i {
+  font-size: 18px;
+  margin: 0.5rem;
+}
+
+#player-panel .player-playback-buttons #pause-button,
+#player-panel .player-playback-buttons #play-button {
+  font-size: 44px;
+}
+
+#player-panel .player-playback-buttons {
+  /* display: flex; */
+  /* flex-direction: row; */
+  /* justify-content: center; */
+  /* align-items: center; */
+}
+#player-panel .player-playback-bar-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 200px;
+  align-items: center;
+  /* margin: 1rem; */
+  /* align-self: flex-end; */
+}
+
+#player-panel .player-playback-bar-container #progress-bar {
+  width: 200px;
+  height: 5px;
+  background-color: white;
+  border-radius: 2px;
+}
+
+#player-panel .player-playback-bar-container #progress-bar-time {
+  /* order: -1; */
+  font-size: 14px;
+  letter-spacing: 0.15px;
+}
+
 .panel-items::-webkit-scrollbar,
 .modal-main::-webkit-scrollbar,
 .content-panels::-webkit-scrollbar,
@@ -526,6 +619,8 @@ body {
   max-height: 100vh;
   max-width: 100vw;
   gap: 1rem;
+
+  position: relative;
 }
 
 .nav-panel {
@@ -722,7 +817,7 @@ body {
 
 .panel-item-fav-container.liked i,
 .modal-fav-container.liked i {
-  color: green;
+  color: #e04980;
 }
 
 .panel-items .panel-item:hover > .panel-item-description-container,
@@ -759,15 +854,16 @@ body {
   height: 80%;
   min-width: 60%;
   width: 60%;
+
   display: grid;
   grid-template-rows: 50% 50%;
   z-index: 999;
   background-color: rgba(11, 11, 20, 1);
 
   position: fixed;
-  top: 50%;
+  top: 10%;
   left: 50%;
-  transform: scale(0) translate(-50%, -50%);
+  transform: scale(0) translate(-50%, -10%);
   border-radius: 6px;
   overflow: none;
   color: white;
@@ -778,7 +874,7 @@ body {
 }
 
 .modal-album.active {
-  transform: scale(1) translate(-50%, -50%);
+  transform: scale(1) translate(-50%, -10%);
 }
 
 .modal-album.active .modal-details,

@@ -51,6 +51,7 @@ const navItems = document.querySelectorAll(".nav-item");
 const albumCards = document.querySelectorAll(".panel-item");
 const albumModal = document.querySelector(".modal-album");
 const optionsPanel = document.querySelector("#options-panel");
+const trackPlayerPanel = document.querySelector("#player-panel");
 
 const loader = document.getElementById("loadingScreen");
 const loading = new Event("loading");
@@ -354,9 +355,10 @@ window.addEventListener("click", async (e) => {
 
   if (modalIsActive) {
     if (e.target.matches("body")) {
-      console.log("body clicked, closing");
       toggleModal();
     }
+
+    console.log(e.target);
   }
 });
 
@@ -701,7 +703,6 @@ async function populateModal(albumID) {
       <i class="fa-solid fa-heart" id="track-like-button"></i>
     </div>
       `;
-
       modalMainDiv.appendChild(modalTrackItemDiv);
     });
 
@@ -712,10 +713,62 @@ async function populateModal(albumID) {
     [modalDetailsDiv, modalMainDiv].forEach((modal) =>
       albumModal.appendChild(modal)
     );
+
+    let trackBtns = modalMainDiv.querySelectorAll("#track-play-button");
+
+    trackBtns.forEach((btn) =>
+      btn.addEventListener("click", (e) => {
+        let trackname = e.target.parentElement.textContent.trim();
+        let { title, length } = album.tracks.find(
+          ({ title }) => title === trackname
+        );
+        // console.log(trackname);
+        // console.log(title, length);
+        // console.log(foundAlbum);
+        let trackDetails = { imageURL, title, artist, length };
+        updateCurrentTrackInPlayer(trackDetails);
+      })
+    );
   }
   loader.dispatchEvent(notLoading);
 
   toggleModal();
+}
+
+function updateCurrentTrackInPlayer(trackDetails) {
+  let { imageURL, title, artist, length } = trackDetails;
+
+  let currentTrackTime = "0:01";
+
+  if (!trackPlayerPanel.classList.contains("playing-track"))
+    trackPlayerPanel.classList.add("playing-track");
+
+  // <i class="fa-solid fa-play" id="play-button"></i>
+  // <i class="fa-solid fa-pause" id="pause-button"></i>
+
+  let html = `
+  <div>
+    <img class="current-track-image" src="${imageURL}" />
+  </div>
+  <div>
+    <p class="current-track-title">${title}</p>
+    <p class="current-track-artist">${artist}</p>
+  </div>
+  <div class="player-playback-buttons">
+    <i class="fa-solid fa-backward"></i>
+    <i class="fa-solid fa-pause" id="pause-button"></i>
+    <i class="fa-solid fa-forward"></i>
+  </div>
+  <div class="player-playback-bar-container">
+    <div id="progress-bar"></div>
+    <div id="progress-bar-time">
+      <p id="player-track-time-string">${currentTrackTime} | ${length}</p>
+    </div>
+  </div>
+  `;
+
+  trackPlayerPanel.innerHTML = html;
+  console.log(trackPlayerPanel);
 }
 
 function handleModalInForeground() {
@@ -724,10 +777,12 @@ function handleModalInForeground() {
   for (let child of pageBody.children) {
     if (child.className !== "modal-album active") {
       if (modalIsActive === true) {
-        child.style.pointerEvents = "none";
-        child.style.filter = "blur(3px)";
-        child.style.opacity = "0.1";
-        pageBody.style.overflowY = "hidden";
+        if (!child.matches("#player-panel")) {
+          child.style.pointerEvents = "none";
+          child.style.filter = "blur(3px)";
+          child.style.opacity = "0.1";
+          pageBody.style.overflowY = "hidden";
+        }
       }
 
       if (modalIsActive === false) {
