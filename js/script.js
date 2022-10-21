@@ -391,7 +391,10 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
       case "Settings":
         return generateSettings();
       default:
-        return navPanelHTMLObjects[sectionTitle].html;
+        break;
+        
+      // return;
+      // return navPanelHTMLObjects[sectionTitle].html;
     }
 
     function generateSettings() {
@@ -451,12 +454,26 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
         "api/albums/trending"
       );
 
+      let trackDetails;
+
       let innerPanelsHTML = ``;
 
-      trendingAlbums.forEach(({ name, artist, id, imageURL, isTrending }) => {
-        let location = isTrending.locale;
-        let panelHTML = `
-        <div class="trending-panel-pane" data-album-id="${id}">
+      trendingAlbums.forEach(
+        ({ name, artist, id, imageURL, isTrending, tracks }) => {
+          let location = isTrending.locale;
+
+          trackDetails = { imageURL, name, artist, tracks };
+          // updateCurrentTrackInPlayer(${trackDetails}
+
+          let trendingPanelPane = document.createElement("div");
+          trendingPanelPane.className = "trending-panel-pane";
+          trendingPanelPane.setAttribute("data-album-id", id);
+
+          trendingPanelPane.addEventListener("click", (e) =>
+            console.log("clicked pane", e.target)
+          );
+
+          trendingPanelPane.innerHTML += `
           <div class="trending-panel-album-cover-container">
             <img
             src="${imageURL}"
@@ -469,10 +486,11 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
             <p class="trending-panel-album-details-artist">${artist}</p>
             <p class="trending-panel-album-details-trend">Trending ${location}</p>
           </div>
-        </div>
         `;
-        innerPanelsHTML += panelHTML;
-      });
+
+          innerPanelsHTML += trendingPanelPane.outerHTML;
+        }
+      );
 
       let returnedHTML = `
         <div class="trending-panel-panes">
@@ -484,6 +502,9 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
       `;
 
       loader.dispatchEvent(notLoading);
+
+      // setup the trending panels for audio playback
+      // setupTrendingPanels(trendingAlbums);
       return returnedHTML;
     }
 
@@ -607,6 +628,22 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
       return returnedHTML;
     }
   }
+}
+
+function setupTrendingPanels(albums) {
+  // updateCurrentTrackInPlayer(trackDetails)
+  console.log("hey");
+  console.log("albums are", albums.length);
+  let trendingPanes = document.querySelectorAll(".trending-panel-pane");
+  console.log("trending panes", trendingPanes);
+  // document
+  //   .querySelectorAll(".trending-panel-pane")
+  //   .forEach((trendingPane) => {
+  //     console.log(trendingPane);
+  //     trendingPane.addEventListener("click", (e) =>
+  //       console.log("clicked trending album", e.target)
+  //     );
+  //   });
 }
 
 async function populateModal(albumID) {
@@ -736,7 +773,11 @@ async function populateModal(albumID) {
 }
 
 function updateCurrentTrackInPlayer(trackDetails) {
-  let { imageURL, title, artist, length } = trackDetails;
+  let { imageURL, title, artist, tracks } = trackDetails;
+  // let { title, length } = album.tracks.find(
+  //   ({ title }) => title === trackname
+  // );
+  let { length } = tracks.find(({ length }) => title === title);
 
   let currentTrackTime = "0:01";
 
@@ -768,7 +809,7 @@ function updateCurrentTrackInPlayer(trackDetails) {
   `;
 
   trackPlayerPanel.innerHTML = html;
-  console.log(trackPlayerPanel);
+  // console.log(trackPlayerPanel);
 }
 
 function handleModalInForeground() {
