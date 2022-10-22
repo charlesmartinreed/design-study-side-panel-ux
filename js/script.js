@@ -392,7 +392,7 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
         return generateSettings();
       default:
         break;
-        
+
       // return;
       // return navPanelHTMLObjects[sectionTitle].html;
     }
@@ -590,9 +590,24 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
       );
 
       let innerPanelsHTML = ``;
+      let returnedHTML = "";
 
-      collectedAlbums.forEach(({ id, name, artist, imageURL }) => {
+      if (collectedAlbums.length === 0) {
         innerPanelsHTML += `
+        <img src="images/krzak-tumbleweed.gif" class="img-collection-empty"></img>
+        `;
+
+        returnedHTML = innerPanelsHTML;
+        //   returnedHTML = `<div class="collection-panel-panes">
+        //   <div class="collection-pane-wrapper">
+        //     ${innerPanelsHTML}
+        //   </div>
+        // </div>`;
+      }
+
+      if (collectedAlbums.length > 0) {
+        collectedAlbums.forEach(({ id, name, artist, imageURL }) => {
+          innerPanelsHTML += `
         <div class="collection-panel-pane" data-album-id="${id}">
       <div class="collection-panel-album-cover-container">
         <img
@@ -607,9 +622,9 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
       </div>
     </div>
         `;
-      });
+        });
 
-      let returnedHTML = `
+        returnedHTML = `
         <div class="collection-search-container">
         <input
         type="text"
@@ -623,6 +638,7 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
           </div>
         </div>
       `;
+      }
 
       loader.dispatchEvent(notLoading);
       return returnedHTML;
