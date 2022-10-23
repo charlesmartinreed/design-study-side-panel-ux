@@ -332,7 +332,30 @@ function closeOptionsPanel() {
   optionsPanel.innerHTML = "";
 }
 
+function listenForNewChildren(parentElement) {
+  const config = {
+    attributes: true,
+    childList: true,
+    characterData: true,
+  };
+
+  const callback = (mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === "childList") {
+        const children = Array.from(parentElement.children);
+        console.log("new child added", children);
+      }
+    });
+  };
+
+  const observer = new MutationObserver(callback);
+  observer.observe(parentElement, config);
+}
+
 window.addEventListener("DOMContentLoaded", (e) => {
+  // listen for trending panes
+  listenForNewChildren(optionsPanel);
+
   populateAlbumPanels();
   // loader.dispatchEvent(loading);
 });
@@ -469,7 +492,7 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
           trendingPanelPane.className = "trending-panel-pane";
           trendingPanelPane.setAttribute("data-album-id", id);
 
-          trendingPanelPane.addEventListener("click", (e) =>
+          trendingPanelPane.addEventListener("mouseover", async (e) =>
             console.log("clicked pane", e.target)
           );
 
@@ -492,7 +515,7 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
         }
       );
 
-      let returnedHTML = `
+      let panesHTML = `
         <div class="trending-panel-panes">
           <div class="trending-pane-spacer"></div>
           <div class="trending-pane-wrapper">
@@ -503,9 +526,7 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
 
       loader.dispatchEvent(notLoading);
 
-      // setup the trending panels for audio playback
-      // setupTrendingPanels(trendingAlbums);
-      return returnedHTML;
+      return panesHTML;
     }
 
     async function generateSocialPane() {
