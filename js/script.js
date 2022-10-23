@@ -281,10 +281,12 @@ async function fetchAlbumsFromAPI(limit = null, path = null) {
 
   if (path) {
     fetchURL = `${baseURL}/${path}`;
+    console.log("fetching from path", path);
   }
 
   if (!path) {
-    fetchURL = `${baseURLLocal}/api/albums/?limit=${limit}`;
+    fetchURL = `${baseURL}/api/albums/?limit=${limit}`;
+    // console.log("fetching from path", fetchURL);
   }
 
   try {
@@ -341,9 +343,38 @@ function listenForNewChildren(parentElement) {
 
   const callback = (mutations) => {
     mutations.forEach((mutation) => {
+      // trending-panel-settings-pane child
       if (mutation.type === "childList") {
         const children = Array.from(parentElement.children);
-        console.log("new child added", children);
+
+        for (const child of children) {
+          if (child.classList.contains("trending-panel-settings-pane")) {
+            let panes = document.querySelectorAll(".trending-panel-pane");
+            activeTrendingPanes(panes);
+            // let grandchildren = Array.from(child.children);
+
+            // for (const grandchild of grandchildren) {
+            //   let panes = grandchild.querySelector(".trending-panel-wrapper");
+            //   console.log(panes);
+            //   console.log(grandchild);
+            // }
+            // these are the outer panes
+            // const grandchildren = child.children;
+            // let wrapper = grandchildren.querySelector(
+            //   ".trending-panel-wrapper"
+            // );
+
+            // console.log("list of grandchildren", grandchildren);
+            // console.log("wrappers", wrapper);
+          }
+        }
+
+        // console.log(children);
+
+        // children
+        //   .filter((child) => child.classList.contains("trending-panel-panes"))
+        //   .forEach((grandchild) => console.log(grandchild));
+        // console.log("new child added", children);
       }
     });
   };
@@ -352,12 +383,27 @@ function listenForNewChildren(parentElement) {
   observer.observe(parentElement, config);
 }
 
+function activeTrendingPanes(panes) {
+  panes.forEach((pane) =>
+    pane.addEventListener("click", async (e) => {
+      let id = pane.dataset.albumId;
+
+      let fetchedAlbum = await fetchAlbumsFromAPI(null, `api/album/${id}`);
+
+      console.log(fetchedAlbum);
+
+      let { imageURL, artist, tracks } = fetchedAlbum;
+
+      updateCurrentTrackInPlayer({ imageURL, undefined, artist, tracks });
+    })
+  );
+}
+
 window.addEventListener("DOMContentLoaded", (e) => {
   // listen for trending panes
   listenForNewChildren(optionsPanel);
 
   populateAlbumPanels();
-  // loader.dispatchEvent(loading);
 });
 
 window.addEventListener("click", async (e) => {
@@ -415,9 +461,6 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
         return generateSettings();
       default:
         break;
-
-      // return;
-      // return navPanelHTMLObjects[sectionTitle].html;
     }
 
     function generateSettings() {
@@ -486,7 +529,6 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
           let location = isTrending.locale;
 
           trackDetails = { imageURL, name, artist, tracks };
-          // updateCurrentTrackInPlayer(${trackDetails}
 
           let trendingPanelPane = document.createElement("div");
           trendingPanelPane.className = "trending-panel-pane";
@@ -619,11 +661,6 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
         `;
 
         returnedHTML = innerPanelsHTML;
-        //   returnedHTML = `<div class="collection-panel-panes">
-        //   <div class="collection-pane-wrapper">
-        //     ${innerPanelsHTML}
-        //   </div>
-        // </div>`;
       }
 
       if (collectedAlbums.length > 0) {
@@ -667,22 +704,6 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
   }
 }
 
-function setupTrendingPanels(albums) {
-  // updateCurrentTrackInPlayer(trackDetails)
-  console.log("hey");
-  console.log("albums are", albums.length);
-  let trendingPanes = document.querySelectorAll(".trending-panel-pane");
-  console.log("trending panes", trendingPanes);
-  // document
-  //   .querySelectorAll(".trending-panel-pane")
-  //   .forEach((trendingPane) => {
-  //     console.log(trendingPane);
-  //     trendingPane.addEventListener("click", (e) =>
-  //       console.log("clicked trending album", e.target)
-  //     );
-  //   });
-}
-
 async function populateModal(albumID) {
   loader.dispatchEvent(loading);
 
@@ -713,8 +734,6 @@ async function populateModal(albumID) {
       recordLabel,
       isFavorited,
     } = album;
-
-    // releaseDate = new Intl.DateTimeFormat("en-US").format(releaseDate);
 
     let modalDetailsDiv = document.createElement("div");
     modalDetailsDiv.className = "modal-details";
@@ -793,13 +812,10 @@ async function populateModal(albumID) {
     trackBtns.forEach((btn) =>
       btn.addEventListener("click", (e) => {
         let trackname = e.target.parentElement.textContent.trim();
-        let { title, length } = album.tracks.find(
-          ({ title }) => title === trackname
-        );
-        // console.log(trackname);
-        // console.log(title, length);
-        // console.log(foundAlbum);
-        let trackDetails = { imageURL, title, artist, length };
+
+        let { title } = album.tracks.find(({ title }) => title === trackname);
+       
+        let trackDetails = { imageURL, title, artist, tracks };
         updateCurrentTrackInPlayer(trackDetails);
       })
     );
@@ -811,9 +827,9 @@ async function populateModal(albumID) {
 
 function updateCurrentTrackInPlayer(trackDetails) {
   let { imageURL, title, artist, tracks } = trackDetails;
-  // let { title, length } = album.tracks.find(
-  //   ({ title }) => title === trackname
-  // );
+
+  if (title === undefined) title = tracks[0].title;
+
   let { length } = tracks.find(({ length }) => title === title);
 
   let currentTrackTime = "0:01";
