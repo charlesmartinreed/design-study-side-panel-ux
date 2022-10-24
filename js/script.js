@@ -223,6 +223,24 @@ function handleFavContainer(container, id) {
   });
 }
 
+async function attemptToUpdateAlbumState(
+  albumId,
+  statefulElement,
+  currentState
+) {
+  let stateWasUpdated = false;
+  try {
+    let res = await toggleAlbumInCollection(albumId, currentState);
+    if (res.ok) stateWasUpdated = true;
+    console.log("successfully update state");
+  } catch (e) {
+    console.error(e);
+  } finally {
+    if (!statefulElement) return;
+    statefulElement.classList.toggle("liked", stateWasUpdated);
+  }
+}
+
 async function toggleAlbumInCollection(id, currentState) {
   let URL = `${baseURLLocal}/api/album/${id}`;
   let data = { prop: "isFavorited", value: !currentState };
@@ -233,6 +251,7 @@ async function toggleAlbumInCollection(id, currentState) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
+    console.log("attempting to update state");
     return res;
   } catch (e) {
     console.error(e);
@@ -351,30 +370,13 @@ function listenForNewChildren(parentElement) {
           if (child.classList.contains("trending-panel-settings-pane")) {
             let panes = document.querySelectorAll(".trending-panel-pane");
             activeTrendingPanes(panes);
-            // let grandchildren = Array.from(child.children);
+          }
 
-            // for (const grandchild of grandchildren) {
-            //   let panes = grandchild.querySelector(".trending-panel-wrapper");
-            //   console.log(panes);
-            //   console.log(grandchild);
-            // }
-            // these are the outer panes
-            // const grandchildren = child.children;
-            // let wrapper = grandchildren.querySelector(
-            //   ".trending-panel-wrapper"
-            // );
-
-            // console.log("list of grandchildren", grandchildren);
-            // console.log("wrappers", wrapper);
+          if (child.classList.contains("collection-panel-settings-pane")) {
+            let panes = document.querySelectorAll(".collection-panel-pane");
+            handleCollectionPaneClicked(panes);
           }
         }
-
-        // console.log(children);
-
-        // children
-        //   .filter((child) => child.classList.contains("trending-panel-panes"))
-        //   .forEach((grandchild) => console.log(grandchild));
-        // console.log("new child added", children);
       }
     });
   };
@@ -383,20 +385,46 @@ function listenForNewChildren(parentElement) {
   observer.observe(parentElement, config);
 }
 
+async function handleCollectionPaneClicked(panes) {
+  panes.forEach((pane) => {
+    let id = pane.dataset.albumId;
+    let isFavorited = true;
+
+    pane.addEventListener("click", async (e) => {
+      if (e.target.matches("#play-button")) {
+        fetchAndPlayAlbum(id);
+      }
+
+      if (e.target.matches("#unfav-button")) {
+        console.log("unfav button clicked");
+        await attemptToUpdateAlbumState(id, null, isFavorited);
+        await layoutOptionsPanel(
+          navPanelHTMLObjects["Collection"].classTitle,
+          "Collection"
+        );
+      }
+    });
+  });
+}
+
 function activeTrendingPanes(panes) {
   panes.forEach((pane) =>
     pane.addEventListener("click", async (e) => {
       let id = pane.dataset.albumId;
 
-      let fetchedAlbum = await fetchAlbumsFromAPI(null, `api/album/${id}`);
-
-      console.log(fetchedAlbum);
-
-      let { imageURL, artist, tracks } = fetchedAlbum;
-
-      updateCurrentTrackInPlayer({ imageURL, undefined, artist, tracks });
+      await fetchAndPlayAlbum(id);
     })
   );
+}
+
+async function fetchAndPlayAlbum(albumId) {
+  let fetchedAlbum = await fetchAlbumsFromAPI(null, `api/album/${albumId}`);
+
+  console.log(fetchedAlbum);
+
+  let { imageURL, artist, tracks } = fetchedAlbum;
+
+  updateCurrentTrackInPlayer({ imageURL, undefined, artist, tracks });
 }
 
 window.addEventListener("DOMContentLoaded", (e) => {
@@ -440,6 +468,7 @@ function toggleModal() {
 }
 
 async function layoutOptionsPanel(sectionClass, sectionTitle) {
+  console.log("laying out panel");
   let sectionHTML = await generateSettingsPane(sectionTitle);
 
   let contentDiv = document.createElement("div");
@@ -678,6 +707,10 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
         <p class="collection-panel-album-details-title">${name}</p>
         <p class="collection-panel-album-details-artist">${artist}</p>
       </div>
+      <div class="collection-panel-album-ui-buttons">
+        <i class="fa-solid fa-heart-crack" id="unfav-button"></i>
+        <i class="fa-solid fa-play" id="play-button"></i>
+      </div>
     </div>
         `;
         });
@@ -814,7 +847,7 @@ async function populateModal(albumID) {
         let trackname = e.target.parentElement.textContent.trim();
 
         let { title } = album.tracks.find(({ title }) => title === trackname);
-       
+
         let trackDetails = { imageURL, title, artist, tracks };
         updateCurrentTrackInPlayer(trackDetails);
       })

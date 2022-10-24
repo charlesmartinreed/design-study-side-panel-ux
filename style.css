@@ -519,7 +519,7 @@ body {
   content: "▶";
   height: 100%;
   width: 100%;
-  background-color: rgba(12, 130, 12, 1);
+  /* background-color: rgba(12, 130, 12, 1); */
   background-color: rgba(84, 223, 84, 1);
   display: flex;
   justify-content: center;
@@ -538,19 +538,24 @@ body {
   border-bottom-right-radius: 10px;
 }
 
-.collection-panel-album-details-container::after {
-  content: "💔";
+.collection-panel-album-details-container {
+  position: relative;
+}
+
+.collection-panel-album-ui-buttons {
+  position: absolute;
+  bottom: 0;
+  left: 0;
   height: 90px;
   width: 100%;
+
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
   position: absolute;
-  bottom: 0%;
-  left: 0%;
-  background-color: rgba(195, 28, 28, 1);
-  color: white;
-  font-size: 30px;
+  flex-basis: 1;
+  /* gap: 0.5rem; */
+  font-size: 2.1rem;
   opacity: 0;
 
   transition: all 0.25s ease-in-out;
@@ -560,7 +565,36 @@ body {
   /* background-color: red; */
 }
 
-.collection-panel-album-details-container:hover::after,
+.collection-panel-album-ui-buttons #play-button,
+.collection-panel-album-ui-buttons #unfav-button {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.collection-panel-album-ui-buttons #play-button {
+  background-color: rgba(84, 223, 84, 1);
+  border-bottom-right-radius: 4px;
+  /* height: 100%; */
+  /* width: 100%; */
+}
+
+.collection-panel-album-ui-buttons #unfav-button {
+  /* display: block; */
+  /* height: 100%; */
+  /* width: 100%; */
+  background-color: rgba(195, 28, 28, 1);
+  border-bottom-left-radius: 4px;
+}
+
+.collection-panel-album-unfavorite-button #unfav-button,
+.collection-panel-album-unfavorite-button #play-button {
+  color: white;
+}
+
+.collection-panel-album-ui-buttons:hover,
 .trending-panel-pane:hover::after {
   opacity: 1;
 }
