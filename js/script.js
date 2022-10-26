@@ -50,6 +50,8 @@ const navPanel = document.querySelector("#nav-panel");
 const navItems = document.querySelectorAll(".nav-item");
 const albumCards = document.querySelectorAll(".panel-item");
 const albumModal = document.querySelector(".modal-album");
+const searchModal = document.querySelector(".modal-search");
+const searchInput = document.querySelector(".library-search-input");
 const optionsPanel = document.querySelector("#options-panel");
 const trackPlayerPanel = document.querySelector("#player-panel");
 
@@ -80,6 +82,8 @@ loader.addEventListener(
   },
   false
 );
+
+searchInput.addEventListener("keydown", (e) => handleSearchInputFor(e));
 
 // METHODS
 
@@ -113,6 +117,26 @@ function stopLoaderAnimation() {
   }
 
   loader.classList.remove("loading");
+}
+
+function handleSearchInputFor(e) {
+  if (!searchModal.classList.contains("active")) {
+    toggleModal(searchModal);
+  }
+
+  let targetElement = e.target;
+  let content = "";
+  content += e.target.value;
+  updateSearchModal(content);
+
+  // console.log("input is", e.target.value);
+}
+
+function updateSearchModal(content) {
+  searchModal.innerHTML = content;
+
+  // setTimeout(() => {
+  // }, 1000);
 }
 
 async function populateAlbumPanels() {
@@ -207,19 +231,9 @@ async function populateAlbumPanels() {
 function handleFavContainer(container, id) {
   container.addEventListener("click", async (e) => {
     let parent = e.target.parentElement;
-    // let grandparent = parent.parentElement;
-    // let id = grandparent.getAttribute("data-album-id");
 
     let currentState = parent.classList.contains("liked");
-
-    try {
-      let res = await toggleAlbumInCollection(id, currentState);
-      if (res.ok) currentState = !currentState;
-    } catch (e) {
-      console.error(e);
-    } finally {
-      parent.classList.toggle("liked", currentState);
-    }
+    attemptToUpdateAlbumState(id, parent, currentState);
   });
 }
 
@@ -452,19 +466,70 @@ window.addEventListener("click", async (e) => {
 
   if (modalIsActive) {
     if (e.target.matches("body")) {
-      toggleModal();
+      modal = albumModal.classList.contains("active")
+        ? albumModal
+        : searchModal;
+
+      console.log("modal is", modal);
+      toggleModal(modal);
     }
 
-    console.log(e.target);
+    // console.log(e.target);
   }
 });
 
 // MODALS
-function toggleModal() {
+function toggleModal(modal) {
   modalIsActive = !modalIsActive;
 
-  albumModal.classList.toggle("active", modalIsActive);
-  handleModalInForeground();
+  // console.log("toggle modal`s modal is ", modal);
+
+  modal.classList.toggle("active", modalIsActive);
+  handleModalInForeground(modal);
+}
+
+function handleModalInForeground(modal) {
+  let pageBody = document.querySelector("body");
+
+  for (let child of pageBody.children) {
+    if (modalIsActive) {
+      if (modal.classList.contains("modal-album")) {
+        if (!child.matches("#player-panel") && child !== modal) {
+          blurBackgroundElements();
+        }
+      }
+
+      if (modal.classList.contains("modal-search")) {
+        if (
+          !child.matches(".library-search-container") &&
+          !child.matches("#player-panel") &&
+          child !== modal
+        ) {
+          blurBackgroundElements();
+        }
+      }
+    } else {
+      unblurBackgroundElements();
+    }
+
+    function blurBackgroundElements() {
+      child.style.pointerEvents = "none";
+      child.style.filter = "blur(3px)";
+      child.style.opacity = "0.1";
+      pageBody.style.overflowY = "hidden";
+    }
+
+    function unblurBackgroundElements() {
+      child.style.pointerEvents = "auto";
+      child.style.filter = "none";
+      child.style.opacity = "1";
+      pageBody.style.overflow = "auto";
+
+      if (child.classList.contains("modal-search")) {
+        child.innerHTML = "";
+      }
+    }
+  }
 }
 
 async function layoutOptionsPanel(sectionClass, sectionTitle) {
@@ -855,7 +920,7 @@ async function populateModal(albumID) {
   }
   loader.dispatchEvent(notLoading);
 
-  toggleModal();
+  toggleModal(albumModal);
 }
 
 function updateCurrentTrackInPlayer(trackDetails) {
@@ -896,28 +961,4 @@ function updateCurrentTrackInPlayer(trackDetails) {
 
   trackPlayerPanel.innerHTML = html;
   // console.log(trackPlayerPanel);
-}
-
-function handleModalInForeground() {
-  let pageBody = document.querySelector("body");
-
-  for (let child of pageBody.children) {
-    if (child.className !== "modal-album active") {
-      if (modalIsActive === true) {
-        if (!child.matches("#player-panel")) {
-          child.style.pointerEvents = "none";
-          child.style.filter = "blur(3px)";
-          child.style.opacity = "0.1";
-          pageBody.style.overflowY = "hidden";
-        }
-      }
-
-      if (modalIsActive === false) {
-        child.style.pointerEvents = "all";
-        child.style.filter = "none";
-        child.style.opacity = "1";
-        pageBody.style.overflow = "auto";
-      }
-    }
-  }
 }

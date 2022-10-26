@@ -78,7 +78,7 @@ body {
   align-items: center;
 
   transform: scale(0);
-  transform-origin: bottom left;
+  transform-origin: left bottom;
   transition: all 0.2s var(--bezier-with-bounce);
   z-index: 2000;
 
@@ -175,6 +175,7 @@ body {
 
   transition: all 0.25s ease-in-out;
   display: block;
+  z-index: 9999;
 }
 
 .library-search-container:focus-within,
@@ -192,6 +193,8 @@ body {
 
 .library-search-input,
 .collection-search-input {
+  cursor: pointer;
+  pointer-events: all;
   font-weight: 300;
   font-size: 2rem;
   letter-spacing: -1px;
@@ -572,6 +575,14 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.collection-panel-album-ui-buttons #play-button:hover,
+.collection-panel-album-ui-buttons #unfav-button:hover,
+.collection-panel-album-ui-buttons #play-button:focus,
+.collection-panel-album-ui-buttons #unfav-button:focus {
+  transform: scale(1.01);
 }
 
 .collection-panel-album-ui-buttons #play-button {
@@ -582,9 +593,6 @@ body {
 }
 
 .collection-panel-album-ui-buttons #unfav-button {
-  /* display: block; */
-  /* height: 100%; */
-  /* width: 100%; */
   background-color: rgba(195, 28, 28, 1);
   border-bottom-left-radius: 4px;
 }
@@ -610,6 +618,7 @@ body {
   height: 100%;
   /* background-color: rebeccapurple; */
   gap: 2rem;
+  margin-top: 1rem;
 }
 
 .collection-panel-album-cover-container,
@@ -883,6 +892,20 @@ body {
 .panel-item-description-album-title {
   font-weight: 400;
   font-style: italic;
+}
+
+.modal-search.active {
+  /* display: block; */
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -20%);
+
+  min-height: 25%;
+  width: 50%;
+  background-color: rgba(11, 11, 20, 1);
+
+  z-index: 9999;
 }
 
 .modal-album {
