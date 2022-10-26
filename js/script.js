@@ -482,8 +482,6 @@ window.addEventListener("click", async (e) => {
 function toggleModal(modal) {
   modalIsActive = !modalIsActive;
 
-  // console.log("toggle modal`s modal is ", modal);
-
   modal.classList.toggle("active", modalIsActive);
   handleModalInForeground(modal);
 }
@@ -527,9 +525,14 @@ function handleModalInForeground(modal) {
 
       if (child.classList.contains("modal-search")) {
         child.innerHTML = "";
+        clearInput(searchInput);
       }
     }
   }
+}
+
+function clearInput(inputElement) {
+  inputElement.value = "";
 }
 
 async function layoutOptionsPanel(sectionClass, sectionTitle) {
