@@ -768,6 +768,7 @@ body {
   animation: 0.8s cubic-bezier(0.46, 0.25, 0.09, 1.15) forwards animateBorders;
 }
 
+/* PANELS START */
 .panel-header {
   height: 300px;
   min-width: 150px;
@@ -793,6 +794,7 @@ body {
   content: attr(data-icon-text);
 }
 
+/* PANEL-ITEMS START */
 .panel-items {
   display: flex;
   flex-direction: row;
@@ -810,6 +812,33 @@ body {
   background-color: var(--contrast-blue);
   box-shadow: -8px -12px 2px rgba(0, 0, 0, 0.5);
   border-radius: 10px;
+}
+
+/* PANEL-ITEM START */
+.panel-items .panel-item .panel-item-fav-container,
+.modal-album .modal-details .modal-album-art .modal-fav-container {
+  opacity: 0;
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 1%;
+  height: 50px;
+  width: 50px;
+  font-size: 2rem;
+  color: white;
+
+  cursor: pointer;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transition: all 0.1s ease-in;
+}
+
+.panel-items .panel-item .panel-item-fav-container i,
+.modal-album .modal-details .modal-album-art .modal-fav-container i {
+  text-shadow: 3px 4px 12px rgba(0, 0, 0, 1);
 }
 
 .panel-items .panel-item {
@@ -893,134 +922,10 @@ body {
   font-weight: 400;
   font-style: italic;
 }
+/* PANELS END */
 
-.modal-search.active {
-  /* display: block; */
-  position: absolute;
-  top: 20%;
-  left: 50%;
-  transform: translate(-50%, -20%);
-
-  min-height: 25%;
-  width: 50%;
-  background-color: rgba(11, 11, 20, 1);
-
-  z-index: 9999;
-}
-
-.modal-album {
-  min-height: 80%;
-  height: 80%;
-  min-width: 60%;
-  width: 60%;
-
-  display: grid;
-  grid-template-rows: 50% 50%;
-  z-index: 999;
-  background-color: rgba(11, 11, 20, 1);
-
-  position: fixed;
-  top: 10%;
-  left: 50%;
-  transform: scale(0) translate(-50%, -10%);
-  border-radius: 6px;
-  overflow: none;
-  color: white;
-  padding: 1rem 0;
-
-  transition: all 0.2s ease-in-out;
-  transform-origin: top left;
-}
-
-.modal-album.active {
-  transform: scale(1) translate(-50%, -10%);
-}
-
-.modal-album.active .modal-details,
-.modal-album.active .modal-main {
-  text-transform: capitalize;
-}
-
-.modal-album .modal-details img {
-  width: 200px;
-  height: 200px;
-  pointer-events: none;
-}
-
-.modal-album .modal-details .modal-album-art {
-  position: relative;
-}
-
-.panel-items .panel-item .panel-item-fav-container,
-.modal-album .modal-details .modal-album-art .modal-fav-container {
-  opacity: 0;
-  display: block;
-  position: absolute;
-  top: 0;
-  right: 1%;
-  height: 50px;
-  width: 50px;
-  font-size: 2rem;
-  color: white;
-
-  cursor: pointer;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  transition: all 0.1s ease-in;
-}
-
-.panel-items .panel-item .panel-item-fav-container i,
-.modal-album .modal-details .modal-album-art .modal-fav-container i {
-  text-shadow: 3px 4px 12px rgba(0, 0, 0, 1);
-}
-
-/* .panel-items .panel-item::after */
-/* .modal-album .modal-details .modal-album-art::after {
-  display: block;
-  content: "❤";
-  position: absolute;
-  top: 0;
-  right: 5%;
-  height: 50px;
-  width: 50px;
-  background-color: white;
-  color: rgba(22, 22, 22, 1);
-  opacity: 0.5;
-  font-size: 2rem;
-
-  cursor: pointer;
-
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-end;
-} */
-
-.modal-album .modal-details .modal-album-description div {
-  font-size: 12px;
-  font-weight: 200;
-  letter-spacing: 1px;
-}
-
-.modal-album .modal-details .modal-album-description {
-  display: flex;
-  flex-direction: column;
-}
-
-.modal-album .modal-details {
-  width: 95%;
-  justify-self: center;
-  margin: 1rem 0;
-  padding: 1rem 0;
-  border-radius: 8px;
-  display: grid;
-  justify-items: center;
-  align-items: center;
-  grid-template-columns: 50% 50%;
-}
-
+/* MODALS START */
+/* MODAL - MAIN START */
 .modal-main {
   width: 95%;
   justify-self: center;
@@ -1091,7 +996,123 @@ body {
   transform: scale(1.05);
   color: rgb(195, 28, 28);
 }
+/* MODAL - MAIN END */
 
+/* MODAL - ALBUM START */
+.modal-album {
+  min-height: 80%;
+  height: 80%;
+  min-width: 60%;
+  width: 60%;
+
+  display: grid;
+  grid-template-rows: 50% 50%;
+  z-index: 999;
+  background-color: rgba(11, 11, 20, 1);
+
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  transform: scale(0) translate(-50%, -10%);
+  border-radius: 6px;
+  overflow: none;
+  color: white;
+  padding: 1rem 0;
+
+  transition: all 0.2s ease-in-out;
+  transform-origin: top left;
+}
+
+.modal-album.active {
+  transform: scale(1) translate(-50%, -10%);
+}
+
+.modal-album.active .modal-details,
+.modal-album.active .modal-main {
+  text-transform: capitalize;
+}
+
+.modal-album .modal-details img {
+  width: 200px;
+  height: 200px;
+  pointer-events: none;
+}
+
+.modal-album .modal-details .modal-album-art {
+  position: relative;
+}
+
+.modal-album .modal-details .modal-album-description div {
+  font-size: 12px;
+  font-weight: 200;
+  letter-spacing: 1px;
+}
+
+.modal-album .modal-details .modal-album-description {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-album .modal-details {
+  width: 95%;
+  justify-self: center;
+  margin: 1rem 0;
+  padding: 1rem 0;
+  border-radius: 8px;
+  display: grid;
+  justify-items: center;
+  align-items: center;
+  grid-template-columns: 50% 50%;
+}
+/* MODAL - ALBUM END */
+
+/* MODAL - SEARCH START */
+.modal-search.active {
+  /* display: block; */
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -20%);
+
+  min-height: 25%;
+  width: 50%;
+  background-color: rgba(11, 11, 20, 1);
+
+  z-index: 9999;
+}
+
+.search-result-card {
+  width: 100%;
+  height: 100px;
+  background-color: aqua;
+  color: white;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 1rem;
+}
+
+.search-result-type {
+  background-color: white;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 3px;
+  padding: 0.5rem;
+}
+
+.search-result-type .album {
+  background-color: red;
+}
+
+.search-result-type .song {
+  background-color: yellow;
+}
+
+/* MODAL - SEARCH END */
+/* MODALS END */
+
+/* KEYFRAMES START */
 @keyframes animateColors {
   0% {
     opacity: 0.25;
@@ -1134,3 +1155,4 @@ body {
     transform: translateX(0);
   }
 }
+/* KEYFRAMES END */

@@ -119,22 +119,77 @@ function stopLoaderAnimation() {
   loader.classList.remove("loading");
 }
 
-function handleSearchInputFor(e) {
+async function handleSearchInputFor(e) {
   if (!searchModal.classList.contains("active")) {
     toggleModal(searchModal);
   }
+  let results;
 
-  let targetElement = e.target;
-  let content = "";
-  content += e.target.value;
-  updateSearchModal(content);
+  let searchQuery = e.target.value.toLowerCase();
+
+  while (searchQuery.length >= 3) {
+    results = await updateSearchModal(searchQuery);
+  }
+
+  function createSearchResultCard(result, resultType) {
+    const resultTypes = {
+      song: "song",
+      album: "album",
+    };
+
+    let resultDiv = document.createElement("div");
+    resultDiv.className = `search-result-card`;
+
+    let resultTitleDiv = document.createElement("div");
+    resultTitleDiv.className = `search-result-title-container`;
+    let resultTitle = document.createElement("p");
+    resultTitle.textContent = `${result}`;
+
+    let resultTypeDiv = document.createElement("div");
+    resultTypeDiv.className = `search-result-type-container`;
+
+    let resultType = document.createElement("p");
+    resultType.className = `search-result-type ${
+      resultType === "album" ? "album" : "song"
+    }`;
+    resultType.textContent = `${resultTypes.resultType}`;
+  }
 
   // console.log("input is", e.target.value);
 }
 
-function updateSearchModal(content) {
+async function updateSearchModal(searchQuery) {
   searchModal.innerHTML = content;
+  let fetched = [];
 
+  try {
+    fetched = await fetchAlbumsFromAPI(null, null);
+  } catch (e) {
+    console.log(e);
+  }
+
+  if (fetched.length === 0) return [];
+
+  let albumResults = fetched
+    .map((album) => album.name.toLowerCase())
+    .filter((name) => checkForMatch(name) === true);
+
+  let songResults = fetched
+    .map(({ tracks }) => tracks.title.toLowerCase())
+    .filter((name) => checkForMatch(name) === true);
+
+  function checkForMatch(searchQuery, testStr) {
+    // take the letter count of searchQuery
+    // search by that slice amount in testStr
+    // until end of str or match found
+    for (let i = 0; i < testStr.length; i += searchQuery.length) {
+      let testSlice = testStr.slice(i, i + searchQuery.length);
+      if (searchQuery === testSlice) return true;
+    }
+    return false;
+  }
+
+  return [albumResults, songResults];
   // setTimeout(() => {
   // }, 1000);
 }
