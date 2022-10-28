@@ -1078,6 +1078,9 @@ body {
   width: 50%;
   background-color: rgba(11, 11, 20, 1);
 
+  margin: 1rem 0;
+  padding: 1rem;
+
   z-index: 9999;
 }
 
@@ -1090,6 +1093,11 @@ body {
   justify-content: space-around;
   align-items: center;
   padding: 1rem;
+}
+
+.search-result-title-container,
+.search-result-type-container {
+  text-transform: capitalize;
 }
 
 .search-result-type {

@@ -83,7 +83,14 @@ loader.addEventListener(
   false
 );
 
-searchInput.addEventListener("keydown", (e) => handleSearchInputFor(e));
+searchInput.addEventListener("keydown", (e) => {
+  let searchQuery = e.target.value;
+  if (searchQuery.length >= 3) {
+    handleSearchInputFor(searchQuery);
+  } else {
+    removeModalChildren(searchModal);
+  }
+});
 
 // METHODS
 
@@ -119,19 +126,43 @@ function stopLoaderAnimation() {
   loader.classList.remove("loading");
 }
 
-async function handleSearchInputFor(e) {
+async function handleSearchInputFor(searchQuery) {
   if (!searchModal.classList.contains("active")) {
     toggleModal(searchModal);
   }
-  let results;
 
-  let searchQuery = e.target.value.toLowerCase();
+  searchQuery = searchQuery.toLowerCase();
+  try {
+    console.log("search query is", searchQuery);
 
-  while (searchQuery.length >= 3) {
-    results = await updateSearchModal(searchQuery);
+    let results = await updateSearchModal(searchQuery);
+
+    if (!results) {
+      createEmptyResultsCard();
+    }
+
+    if (results) {
+      let [albumResults, songResults] = results;
+
+      // console.log("album results", albumResults);
+      // console.log("song results", songResults);
+    }
+  } catch (e) {
+    console.log(error);
   }
 
-  function createSearchResultCard(result, resultType) {
+  function createEmptyResultsCard() {
+    let resultDiv = document.createElement("div");
+    resultDiv.className = `search-result-card`;
+
+    let emptyResultsDiv = document.createElement("div");
+    emptyResultsDiv.innerHTML = `<h1>No results found.</h1>`;
+    resultDiv.appendChild(emptyResultsDiv);
+
+    searchModal.appendChild(resultDiv);
+  }
+
+  function createSearchResultCard(result) {
     const resultTypes = {
       song: "song",
       album: "album",
@@ -140,58 +171,76 @@ async function handleSearchInputFor(e) {
     let resultDiv = document.createElement("div");
     resultDiv.className = `search-result-card`;
 
-    let resultTitleDiv = document.createElement("div");
-    resultTitleDiv.className = `search-result-title-container`;
-    let resultTitle = document.createElement("p");
-    resultTitle.textContent = `${result}`;
+    resultDiv.innerHTML = `
+      <div class="search-result-title-container">
+        <p class="">${result}</p>
+      </div>
+      <div class="search-result-type-container">
+        <p class="search-result-type">${resultTypes.result}</p>
+      </div>
+    `;
 
-    let resultTypeDiv = document.createElement("div");
-    resultTypeDiv.className = `search-result-type-container`;
-
-    let resultType = document.createElement("p");
-    resultType.className = `search-result-type ${
-      resultType === "album" ? "album" : "song"
-    }`;
-    resultType.textContent = `${resultTypes.resultType}`;
+    searchModal.appendChild(resultDiv);
   }
 
-  // console.log("input is", e.target.value);
-}
+  async function updateSearchModal(searchQuery) {
+    // console.log("search query from updateSearchModal", searchQuery);
+    let fetched = [];
 
-async function updateSearchModal(searchQuery) {
-  searchModal.innerHTML = content;
-  let fetched = [];
+    let albumResults;
+    let songResults;
 
-  try {
-    fetched = await fetchAlbumsFromAPI(null, null);
-  } catch (e) {
-    console.log(e);
-  }
+    try {
+      fetched = await fetchAlbumsFromAPI(null, null);
+      // albumResults = fetched
+      //   .map(({ name }) => name)
+      //   .filter((name) => checkForMatch(searchQuery, name) === true);
 
-  if (fetched.length === 0) return [];
+      [...songResults] = fetched.map(({ tracks }) => tracks);
+      // .map(({ title }) => title);
 
-  let albumResults = fetched
-    .map((album) => album.name.toLowerCase())
-    .filter((name) => checkForMatch(name) === true);
+      // .filter((track) => checkForMatch((searchQuery, track)));
 
-  let songResults = fetched
-    .map(({ tracks }) => tracks.title.toLowerCase())
-    .filter((name) => checkForMatch(name) === true);
+      // console.log("albums are", albumResults);
+      console.log("songs are", songResults);
+      // albumResults = fetched
+      //   // .map((album) => album.name.toLowerCase())
+      //   .filter(
+      //     ({ name }) =>
+      //       checkForMatch((searchQuery, name.toLowerCase())) === true
+      //   );
 
-  function checkForMatch(searchQuery, testStr) {
-    // take the letter count of searchQuery
-    // search by that slice amount in testStr
-    // until end of str or match found
-    for (let i = 0; i < testStr.length; i += searchQuery.length) {
-      let testSlice = testStr.slice(i, i + searchQuery.length);
-      if (searchQuery === testSlice) return true;
+      // console.log("fetch after album results filter", fetched);
+
+      // songResults = fetched
+      //   // .map(({ tracks }) => tracks.title.toLowerCase())
+      //   .filter(
+      //     ({ tracks }) =>
+      //       checkForMatch((searchQuery, tracks.title.toLowerCase())) === true
+      //   );
+
+      // console.log("fetch after song results filter", fetched);
+    } catch (e) {
+      console.log(e);
     }
-    return false;
-  }
 
-  return [albumResults, songResults];
-  // setTimeout(() => {
-  // }, 1000);
+    if (fetched.length === 0) return [];
+
+    function checkForMatch(searchQuery, testStr) {
+      console.log("checkformatch query", searchQuery);
+      console.log("checkformatch testStr", testStr);
+      // take the letter count of searchQuery
+      // search by that slice amount in testStr
+      // until end of str or match found
+      for (let i = 0; i < testStr.length; i += searchQuery.length) {
+        let testSlice = testStr.slice(i, i + searchQuery.length);
+        if (searchQuery === testSlice) return true;
+      }
+      return false;
+    }
+
+    return [albumResults, songResults];
+  }
 }
 
 async function populateAlbumPanels() {
@@ -581,8 +630,15 @@ function handleModalInForeground(modal) {
       if (child.classList.contains("modal-search")) {
         child.innerHTML = "";
         clearInput(searchInput);
+        removeModalChildren(searchModal);
       }
     }
+  }
+}
+
+function removeModalChildren(modal) {
+  for (const child of modal.children) {
+    modal.removeChild(child);
   }
 }
 
