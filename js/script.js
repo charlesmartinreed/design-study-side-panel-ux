@@ -65,7 +65,6 @@ const baseURLLocal = `http://localhost:5000`;
 const baseURLRemote = `https://album-api-project.onrender.com`;
 
 let modalIsActive = false;
-let searchResults = [];
 
 // LISTENERS
 loader.addEventListener(
@@ -84,21 +83,13 @@ loader.addEventListener(
   false
 );
 
-searchInput.addEventListener("keydown", async (e) => {
-  let searchQuery = e.target.value;
+searchInput.addEventListener("input", async (e) => {
+  let searchQuery = e.target.value.toLowerCase();
 
-  try {
-    if (searchResults.length === 0) {
-      searchResults = await fetchAlbumsFromAPI(null, null);
-    }
-  } catch (e) {
-    console.error(e);
-  } finally {
-    if (searchQuery.length >= 3) {
-      handleSearchInputFor(searchQuery, searchResults);
-    } else {
-      removeModalChildren(searchModal);
-    }
+  if (searchQuery.length >= 3) {
+    handleSearchInputFor(searchQuery);
+  } else {
+    removeModalChildren(searchModal);
   }
 });
 
@@ -136,79 +127,43 @@ function stopLoaderAnimation() {
   loader.classList.remove("loading");
 }
 
-async function handleSearchInputFor(searchQuery, results) {
+async function handleSearchInputFor(searchQuery) {
   if (!searchModal.classList.contains("active")) {
     toggleModal(searchModal);
   }
 
-  searchQuery = searchQuery.toLowerCase();
+  let searchResults;
 
-  let albumResults = [];
-  let songResults = [];
-
-  if (!results) {
+  try {
+    searchResults = await fetchAlbumsFromAPI(`?search=${searchQuery}`, null);
+    console.log(searchResults);
+  } catch (e) {
+    console.error(e);
     createEmptyResultsCard();
   }
+}
 
-  if (results) {
-    console.log("handling results");
-    console.log(results);
+function createEmptyResultsCard() {
+  let resultDiv = document.createElement("div");
+  resultDiv.className = `search-result-card`;
 
-    results.forEach((album) => {
-      if (checkForMatch(searchQuery, album.name) === true) {
-        albumResults.push(album);
-      }
-      // album.forEach((n) => {
-      //   if (checkForMatch(searchQuery, n.name) === true) albumResults.push(n);
-      // n.tracks.forEach((track) => {
-      //   if (checkForMatch(searchQuery, track) === true) {
-      //     songResults.push(n);
-      //   }
-      // });
-      // });
-      // albumResults = [album, ...albumResults];
-      // songResults = [...album.tracks, ...songResults];
-    });
+  let emptyResultsDiv = document.createElement("div");
+  emptyResultsDiv.innerHTML = `<h1>No results found.</h1>`;
+  resultDiv.appendChild(emptyResultsDiv);
 
-    console.log("album results", albumResults);
-    // console.log("album results", songResults);
-  }
+  searchModal.appendChild(resultDiv);
+}
 
-  function checkForMatch(searchQuery, testStr) {
-    // console.log("checkformatch query", searchQuery);
-    // console.log("checkformatch testStr", testStr);
-    for (let i = 0; i < testStr.length; i += searchQuery.length) {
-      let testSlice = testStr.slice(i, i + searchQuery.length);
-      if (searchQuery === testSlice) {
-        console.log("matched", searchQuery, testStr);
-        console.log("current state of album results", albumResults);
-        return true;
-      }
-    }
-    return false;
-  }
+function createSearchResultCard(result, type) {
+  const resultTypes = {
+    song: "song",
+    album: "album",
+  };
 
-  function createEmptyResultsCard() {
-    let resultDiv = document.createElement("div");
-    resultDiv.className = `search-result-card`;
+  let resultDiv = document.createElement("div");
+  resultDiv.className = `search-result-card`;
 
-    let emptyResultsDiv = document.createElement("div");
-    emptyResultsDiv.innerHTML = `<h1>No results found.</h1>`;
-    resultDiv.appendChild(emptyResultsDiv);
-
-    searchModal.appendChild(resultDiv);
-  }
-
-  function createSearchResultCard(result, type) {
-    const resultTypes = {
-      song: "song",
-      album: "album",
-    };
-
-    let resultDiv = document.createElement("div");
-    resultDiv.className = `search-result-card`;
-
-    resultDiv.innerHTML = `
+  resultDiv.innerHTML = `
       <div class="search-result-title-container">
         <p class="">${result}</p>
       </div>
@@ -217,19 +172,18 @@ async function handleSearchInputFor(searchQuery, results) {
       </div>
     `;
 
-    searchModal.appendChild(resultDiv);
-  }
+  searchModal.appendChild(resultDiv);
+}
 
-  async function updateSearchModal() {
-    let fetched = null;
+async function updateSearchModal() {
+  let fetched = null;
 
-    try {
-      fetched = await fetchAlbumsFromAPI(null, null);
-    } catch (e) {
-      console.log(e);
-    } finally {
-      return fetched;
-    }
+  try {
+    fetched = await fetchAlbumsFromAPI(null, null);
+  } catch (e) {
+    console.log(e);
+  } finally {
+    return fetched;
   }
 }
 
@@ -251,10 +205,9 @@ async function populateAlbumPanels() {
     panelItems.className = "panel-items";
 
     let albums = [];
-    let limit = 3;
 
     try {
-      albums = await fetchAlbumsFromAPI(limit, null);
+      albums = await fetchAlbumsFromAPI(null, null);
     } catch (e) {
       console.error(e);
     } finally {
@@ -400,24 +353,29 @@ navItems.forEach((navItem) => {
   });
 });
 
-async function fetchAlbumsFromAPI(limit = null, path = null) {
-  console.log("fetching now");
+async function fetchAlbumsFromAPI(query = null, path = null) {
   let baseURL = `${baseURLLocal}`;
   let fetchURL;
 
-  if (!limit) limit = 8;
+  let defaultPath = "api/albums";
+  let defaultQuery = "?limit=8";
 
-  if (path) {
-    fetchURL = `${baseURL}/${path}`;
-    // console.log("fetching from path", path);
-  }
+  fetchURL = `${baseURL}/${path ?? defaultPath}/${query ?? defaultQuery}`;
 
-  if (!path) {
-    fetchURL = `${baseURL}/api/albums/?limit=${limit}`;
-    // console.log("fetching from path", fetchURL);
-  }
+  // if (path) {
+  //   if (query) {
+  //     fetchURL = `${baseURL}/${path}/${query}`;
+  //   }
+  //   fetchURL = `${baseURL}/${path}`;
+  // }
+
+  // if (!path && !query) {
+  //   fetchURL = `${baseURL}/api/albums/?limit=8`;
+  // }
 
   try {
+    console.log("attempting fetch from URL", fetchURL);
+
     let res = await fetch(fetchURL);
     let data = await res.json();
     return data;
