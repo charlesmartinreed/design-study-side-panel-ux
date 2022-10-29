@@ -65,6 +65,7 @@ const baseURLLocal = `http://localhost:5000`;
 const baseURLRemote = `https://album-api-project.onrender.com`;
 
 let modalIsActive = false;
+let searchResults = [];
 
 // LISTENERS
 loader.addEventListener(
@@ -83,12 +84,21 @@ loader.addEventListener(
   false
 );
 
-searchInput.addEventListener("keydown", (e) => {
+searchInput.addEventListener("keydown", async (e) => {
   let searchQuery = e.target.value;
-  if (searchQuery.length >= 3) {
-    handleSearchInputFor(searchQuery);
-  } else {
-    removeModalChildren(searchModal);
+
+  try {
+    if (searchResults.length === 0) {
+      searchResults = await fetchAlbumsFromAPI(null, null);
+    }
+  } catch (e) {
+    console.error(e);
+  } finally {
+    if (searchQuery.length >= 3) {
+      handleSearchInputFor(searchQuery, searchResults);
+    } else {
+      removeModalChildren(searchModal);
+    }
   }
 });
 
@@ -126,29 +136,56 @@ function stopLoaderAnimation() {
   loader.classList.remove("loading");
 }
 
-async function handleSearchInputFor(searchQuery) {
+async function handleSearchInputFor(searchQuery, results) {
   if (!searchModal.classList.contains("active")) {
     toggleModal(searchModal);
   }
 
   searchQuery = searchQuery.toLowerCase();
-  try {
-    console.log("search query is", searchQuery);
 
-    let results = await updateSearchModal(searchQuery);
+  let albumResults = [];
+  let songResults = [];
 
-    if (!results) {
-      createEmptyResultsCard();
+  if (!results) {
+    createEmptyResultsCard();
+  }
+
+  if (results) {
+    console.log("handling results");
+    console.log(results);
+
+    results.forEach((album) => {
+      if (checkForMatch(searchQuery, album.name) === true) {
+        albumResults.push(album);
+      }
+      // album.forEach((n) => {
+      //   if (checkForMatch(searchQuery, n.name) === true) albumResults.push(n);
+      // n.tracks.forEach((track) => {
+      //   if (checkForMatch(searchQuery, track) === true) {
+      //     songResults.push(n);
+      //   }
+      // });
+      // });
+      // albumResults = [album, ...albumResults];
+      // songResults = [...album.tracks, ...songResults];
+    });
+
+    console.log("album results", albumResults);
+    // console.log("album results", songResults);
+  }
+
+  function checkForMatch(searchQuery, testStr) {
+    // console.log("checkformatch query", searchQuery);
+    // console.log("checkformatch testStr", testStr);
+    for (let i = 0; i < testStr.length; i += searchQuery.length) {
+      let testSlice = testStr.slice(i, i + searchQuery.length);
+      if (searchQuery === testSlice) {
+        console.log("matched", searchQuery, testStr);
+        console.log("current state of album results", albumResults);
+        return true;
+      }
     }
-
-    if (results) {
-      let [albumResults, songResults] = results;
-
-      // console.log("album results", albumResults);
-      // console.log("song results", songResults);
-    }
-  } catch (e) {
-    console.log(error);
+    return false;
   }
 
   function createEmptyResultsCard() {
@@ -162,7 +199,7 @@ async function handleSearchInputFor(searchQuery) {
     searchModal.appendChild(resultDiv);
   }
 
-  function createSearchResultCard(result) {
+  function createSearchResultCard(result, type) {
     const resultTypes = {
       song: "song",
       album: "album",
@@ -176,70 +213,23 @@ async function handleSearchInputFor(searchQuery) {
         <p class="">${result}</p>
       </div>
       <div class="search-result-type-container">
-        <p class="search-result-type">${resultTypes.result}</p>
+        <p class="search-result-type">${resultTypes.type}</p>
       </div>
     `;
 
     searchModal.appendChild(resultDiv);
   }
 
-  async function updateSearchModal(searchQuery) {
-    // console.log("search query from updateSearchModal", searchQuery);
-    let fetched = [];
-
-    let albumResults;
-    let songResults;
+  async function updateSearchModal() {
+    let fetched = null;
 
     try {
       fetched = await fetchAlbumsFromAPI(null, null);
-      // albumResults = fetched
-      //   .map(({ name }) => name)
-      //   .filter((name) => checkForMatch(searchQuery, name) === true);
-
-      [...songResults] = fetched.map(({ tracks }) => tracks);
-      // .map(({ title }) => title);
-
-      // .filter((track) => checkForMatch((searchQuery, track)));
-
-      // console.log("albums are", albumResults);
-      console.log("songs are", songResults);
-      // albumResults = fetched
-      //   // .map((album) => album.name.toLowerCase())
-      //   .filter(
-      //     ({ name }) =>
-      //       checkForMatch((searchQuery, name.toLowerCase())) === true
-      //   );
-
-      // console.log("fetch after album results filter", fetched);
-
-      // songResults = fetched
-      //   // .map(({ tracks }) => tracks.title.toLowerCase())
-      //   .filter(
-      //     ({ tracks }) =>
-      //       checkForMatch((searchQuery, tracks.title.toLowerCase())) === true
-      //   );
-
-      // console.log("fetch after song results filter", fetched);
     } catch (e) {
       console.log(e);
+    } finally {
+      return fetched;
     }
-
-    if (fetched.length === 0) return [];
-
-    function checkForMatch(searchQuery, testStr) {
-      console.log("checkformatch query", searchQuery);
-      console.log("checkformatch testStr", testStr);
-      // take the letter count of searchQuery
-      // search by that slice amount in testStr
-      // until end of str or match found
-      for (let i = 0; i < testStr.length; i += searchQuery.length) {
-        let testSlice = testStr.slice(i, i + searchQuery.length);
-        if (searchQuery === testSlice) return true;
-      }
-      return false;
-    }
-
-    return [albumResults, songResults];
   }
 }
 
@@ -411,6 +401,7 @@ navItems.forEach((navItem) => {
 });
 
 async function fetchAlbumsFromAPI(limit = null, path = null) {
+  console.log("fetching now");
   let baseURL = `${baseURLLocal}`;
   let fetchURL;
 
@@ -418,7 +409,7 @@ async function fetchAlbumsFromAPI(limit = null, path = null) {
 
   if (path) {
     fetchURL = `${baseURL}/${path}`;
-    console.log("fetching from path", path);
+    // console.log("fetching from path", path);
   }
 
   if (!path) {
