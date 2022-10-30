@@ -83,14 +83,14 @@ loader.addEventListener(
   false
 );
 
-searchInput.addEventListener("input", async (e) => {
+searchInput.addEventListener("keydown", async (e) => {
   let searchQuery = e.target.value.toLowerCase();
 
   if (searchQuery.length >= 3) {
     handleSearchInputFor(searchQuery);
-  } else {
-    removeModalChildren(searchModal);
   }
+
+  removeModalChildren(searchModal);
 });
 
 // METHODS
@@ -132,11 +132,29 @@ async function handleSearchInputFor(searchQuery) {
     toggleModal(searchModal);
   }
 
+  console.log("current query is", searchQuery);
+  if (searchQuery === "") createEmptyResultsCard();
+
+  // should prevent dupe results for 'ab', 'abb', 'abba', for instance
+  // removeModalChildren(searchModal);
+
   let searchResults;
 
   try {
     searchResults = await fetchAlbumsFromAPI(`?search=${searchQuery}`, null);
-    console.log(searchResults);
+
+    let [albumResults, songResults] = searchResults;
+
+    console.log(albumResults);
+    console.log(songResults);
+
+    albumResults.forEach((albumResult) =>
+      parseSearchResultDataForAlbum(albumResult)
+    );
+
+    songResults.forEach((songResult) =>
+      parseSearchResultDataForSong(songResult)
+    );
   } catch (e) {
     console.error(e);
     createEmptyResultsCard();
@@ -154,38 +172,50 @@ function createEmptyResultsCard() {
   searchModal.appendChild(resultDiv);
 }
 
-function createSearchResultCard(result, type) {
-  const resultTypes = {
-    song: "song",
-    album: "album",
-  };
+function parseSearchResultDataForAlbum(albumResult) {
+  let { id, name: title, artist, imageURL } = albumResult;
+
+  createSearchResultCard({ id, title, artist, imageURL }, "album");
+}
+
+function parseSearchResultDataForSong(songResult) {
+  let {
+    albumId,
+    matchedTrack: [{ title }],
+  } = songResult;
+
+  createSearchResultCard({ albumId, title }, "song");
+}
+
+function createSearchResultCard(result, resultType) {
+  // "album = object with id, name, etc | song = object with albumId AND array named 'matchedTrack' which contains song object with 'title', 'length', isFavorited'";
 
   let resultDiv = document.createElement("div");
   resultDiv.className = `search-result-card`;
 
   resultDiv.innerHTML = `
       <div class="search-result-title-container">
-        <p class="">${result}</p>
+        <p class="">${result.title}</p>
       </div>
       <div class="search-result-type-container">
-        <p class="search-result-type">${resultTypes.type}</p>
+        <p class="search-result-type">${resultType}</p>
       </div>
     `;
 
   searchModal.appendChild(resultDiv);
 }
 
-async function updateSearchModal() {
-  let fetched = null;
+// async function updateSearchModal() {
+//   let fetched = null;
 
-  try {
-    fetched = await fetchAlbumsFromAPI(null, null);
-  } catch (e) {
-    console.log(e);
-  } finally {
-    return fetched;
-  }
-}
+//   try {
+//     fetched = await fetchAlbumsFromAPI(null, null);
+//   } catch (e) {
+//     console.log(e);
+//   } finally {
+//     return fetched;
+//   }
+// }
 
 async function populateAlbumPanels() {
   loader.dispatchEvent(loading);
@@ -586,6 +616,7 @@ function handleModalInForeground(modal) {
 }
 
 function removeModalChildren(modal) {
+  // if (!modal.children) return;
   for (const child of modal.children) {
     modal.removeChild(child);
   }
