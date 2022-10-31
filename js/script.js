@@ -83,14 +83,15 @@ loader.addEventListener(
   false
 );
 
-searchInput.addEventListener("keydown", async (e) => {
+searchInput.addEventListener("input", async (e) => {
   let searchQuery = e.target.value.toLowerCase();
 
   if (searchQuery.length >= 3) {
-    handleSearchInputFor(searchQuery);
+    await handleSearchInputFor(searchQuery);
+  } else {
+    // removeModalChildren(searchModal);
+    return;
   }
-
-  removeModalChildren(searchModal);
 });
 
 // METHODS
@@ -132,8 +133,10 @@ async function handleSearchInputFor(searchQuery) {
     toggleModal(searchModal);
   }
 
-  console.log("current query is", searchQuery);
-  if (searchQuery === "") createEmptyResultsCard();
+  // removeModalChildren(searchModal);
+
+  // console.log("current query is", searchQuery);
+  // if (searchQuery === "") createEmptyResultsCard();
 
   // should prevent dupe results for 'ab', 'abb', 'abba', for instance
   // removeModalChildren(searchModal);
@@ -141,20 +144,23 @@ async function handleSearchInputFor(searchQuery) {
   let searchResults;
 
   try {
+    searchModal.innerHTML = ``;
+
     searchResults = await fetchAlbumsFromAPI(`?search=${searchQuery}`, null);
 
     let [albumResults, songResults] = searchResults;
 
-    console.log(albumResults);
-    console.log(songResults);
+    if (albumResults.length === 0 && songResults.length === 0) {
+      createEmptyResultsCard();
+    } else {
+      albumResults.forEach((albumResult) =>
+        parseSearchResultDataForAlbum(albumResult)
+      );
 
-    albumResults.forEach((albumResult) =>
-      parseSearchResultDataForAlbum(albumResult)
-    );
-
-    songResults.forEach((songResult) =>
-      parseSearchResultDataForSong(songResult)
-    );
+      songResults.forEach((songResult) =>
+        parseSearchResultDataForSong(songResult)
+      );
+    }
   } catch (e) {
     console.error(e);
     createEmptyResultsCard();
@@ -202,20 +208,13 @@ function createSearchResultCard(result, resultType) {
       </div>
     `;
 
-  searchModal.appendChild(resultDiv);
+  let currentChildren = Array.from(searchModal.children);
+  if (!currentChildren.includes(resultDiv)) {
+    searchModal.appendChild(resultDiv);
+  } else {
+    return;
+  }
 }
-
-// async function updateSearchModal() {
-//   let fetched = null;
-
-//   try {
-//     fetched = await fetchAlbumsFromAPI(null, null);
-//   } catch (e) {
-//     console.log(e);
-//   } finally {
-//     return fetched;
-//   }
-// }
 
 async function populateAlbumPanels() {
   loader.dispatchEvent(loading);
@@ -618,8 +617,11 @@ function handleModalInForeground(modal) {
 function removeModalChildren(modal) {
   // if (!modal.children) return;
   for (const child of modal.children) {
+    console.log("removing child", child);
     modal.removeChild(child);
   }
+
+  // console.log("cleared children, childrew now", modal.children);
 }
 
 function clearInput(inputElement) {
