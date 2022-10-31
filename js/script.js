@@ -89,7 +89,6 @@ searchInput.addEventListener("input", async (e) => {
   if (searchQuery.length >= 3) {
     await handleSearchInputFor(searchQuery);
   } else {
-    // removeModalChildren(searchModal);
     return;
   }
 });
@@ -132,14 +131,6 @@ async function handleSearchInputFor(searchQuery) {
   if (!searchModal.classList.contains("active")) {
     toggleModal(searchModal);
   }
-
-  // removeModalChildren(searchModal);
-
-  // console.log("current query is", searchQuery);
-  // if (searchQuery === "") createEmptyResultsCard();
-
-  // should prevent dupe results for 'ab', 'abb', 'abba', for instance
-  // removeModalChildren(searchModal);
 
   let searchResults;
 
@@ -194,8 +185,6 @@ function parseSearchResultDataForSong(songResult) {
 }
 
 function createSearchResultCard(result, resultType) {
-  // "album = object with id, name, etc | song = object with albumId AND array named 'matchedTrack' which contains song object with 'title', 'length', isFavorited'";
-
   let resultDiv = document.createElement("div");
   resultDiv.className = `search-result-card`;
 
@@ -322,7 +311,6 @@ async function attemptToUpdateAlbumState(
   try {
     let res = await toggleAlbumInCollection(albumId, currentState);
     if (res.ok) stateWasUpdated = true;
-    console.log("successfully update state");
   } catch (e) {
     console.error(e);
   } finally {
@@ -391,20 +379,7 @@ async function fetchAlbumsFromAPI(query = null, path = null) {
 
   fetchURL = `${baseURL}/${path ?? defaultPath}/${query ?? defaultQuery}`;
 
-  // if (path) {
-  //   if (query) {
-  //     fetchURL = `${baseURL}/${path}/${query}`;
-  //   }
-  //   fetchURL = `${baseURL}/${path}`;
-  // }
-
-  // if (!path && !query) {
-  //   fetchURL = `${baseURL}/api/albums/?limit=8`;
-  // }
-
   try {
-    console.log("attempting fetch from URL", fetchURL);
-
     let res = await fetch(fetchURL);
     let data = await res.json();
     return data;
@@ -492,7 +467,6 @@ async function handleCollectionPaneClicked(panes) {
       }
 
       if (e.target.matches("#unfav-button")) {
-        console.log("unfav button clicked");
         await attemptToUpdateAlbumState(id, null, isFavorited);
         await layoutOptionsPanel(
           navPanelHTMLObjects["Collection"].classTitle,
@@ -515,8 +489,6 @@ function activeTrendingPanes(panes) {
 
 async function fetchAndPlayAlbum(albumId) {
   let fetchedAlbum = await fetchAlbumsFromAPI(null, `api/album/${albumId}`);
-
-  console.log(fetchedAlbum);
 
   let { imageURL, artist, tracks } = fetchedAlbum;
 
@@ -552,11 +524,8 @@ window.addEventListener("click", async (e) => {
         ? albumModal
         : searchModal;
 
-      console.log("modal is", modal);
       toggleModal(modal);
     }
-
-    // console.log(e.target);
   }
 });
 
@@ -615,13 +584,14 @@ function handleModalInForeground(modal) {
 }
 
 function removeModalChildren(modal) {
-  // if (!modal.children) return;
   for (const child of modal.children) {
     console.log("removing child", child);
     modal.removeChild(child);
   }
 
-  // console.log("cleared children, childrew now", modal.children);
+  // check code logic for child removal
+  // this should be redundant
+  searchModal.innerHTML = ``;
 }
 
 function clearInput(inputElement) {
@@ -629,7 +599,6 @@ function clearInput(inputElement) {
 }
 
 async function layoutOptionsPanel(sectionClass, sectionTitle) {
-  console.log("laying out panel");
   let sectionHTML = await generateSettingsPane(sectionTitle);
 
   let contentDiv = document.createElement("div");
@@ -723,11 +692,7 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
           let trendingPanelPane = document.createElement("div");
           trendingPanelPane.className = "trending-panel-pane";
           trendingPanelPane.setAttribute("data-album-id", id);
-
-          trendingPanelPane.addEventListener("mouseover", async (e) =>
-            console.log("clicked pane", e.target)
-          );
-
+          
           trendingPanelPane.innerHTML += `
           <div class="trending-panel-album-cover-container">
             <img
@@ -1056,5 +1021,4 @@ function updateCurrentTrackInPlayer(trackDetails) {
   `;
 
   trackPlayerPanel.innerHTML = html;
-  // console.log(trackPlayerPanel);
 }
