@@ -170,9 +170,14 @@ function createEmptyResultsCard() {
 }
 
 function parseSearchResultDataForAlbum(albumResult) {
-  let { id, name: title, artist, imageURL } = albumResult;
+  let {
+    id,
+    name: title,
+    artist: { artistName },
+    imageURL,
+  } = albumResult;
 
-  createSearchResultCard({ id, title, artist, imageURL }, "album");
+  createSearchResultCard({ id, title, artistName, imageURL }, "album");
 }
 
 function parseSearchResultDataForSong(songResult) {
@@ -235,7 +240,7 @@ async function populateAlbumPanels() {
       let {
         id,
         name,
-        artist,
+        artist: { artistName },
         genre,
         tracks,
         albumLength,
@@ -266,7 +271,7 @@ async function populateAlbumPanels() {
       let descriptionTextAlbumArtist = document.createElement("p");
       descriptionTextAlbumArtist.className =
         "panel-item-description-album-artist";
-      descriptionTextAlbumArtist.textContent = `${artist}`;
+      descriptionTextAlbumArtist.textContent = `${artistName}`;
 
       let descriptionTextAlbumTitle = document.createElement("p");
       descriptionTextAlbumTitle.className =
@@ -490,9 +495,13 @@ function activeTrendingPanes(panes) {
 async function fetchAndPlayAlbum(albumId) {
   let fetchedAlbum = await fetchAlbumsFromAPI(null, `api/album/${albumId}`);
 
-  let { imageURL, artist, tracks } = fetchedAlbum;
+  let {
+    imageURL,
+    artist: { artistName },
+    tracks,
+  } = fetchedAlbum;
 
-  updateCurrentTrackInPlayer({ imageURL, undefined, artist, tracks });
+  updateCurrentTrackInPlayer({ imageURL, undefined, artistName, tracks });
 }
 
 window.addEventListener("DOMContentLoaded", (e) => {
@@ -684,26 +693,33 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
       let innerPanelsHTML = ``;
 
       trendingAlbums.forEach(
-        ({ name, artist, id, imageURL, isTrending, tracks }) => {
+        ({
+          name,
+          artist: { artistName },
+          id,
+          imageURL,
+          isTrending,
+          tracks,
+        }) => {
           let location = isTrending.locale;
 
-          trackDetails = { imageURL, name, artist, tracks };
+          trackDetails = { imageURL, name, artistName, tracks };
 
           let trendingPanelPane = document.createElement("div");
           trendingPanelPane.className = "trending-panel-pane";
           trendingPanelPane.setAttribute("data-album-id", id);
-          
+
           trendingPanelPane.innerHTML += `
           <div class="trending-panel-album-cover-container">
             <img
             src="${imageURL}"
-            alt="Cover of ${name} by ${artist}"
+            alt="Cover of ${name} by ${artistName}"
             class="trending-panel-album-cover-image"
           />
           </div>
           <div class="trending-panel-album-details-container">
             <p class="trending-panel-album-details-title">${name}</p>
-            <p class="trending-panel-album-details-artist">${artist}</p>
+            <p class="trending-panel-album-details-artist">${artistName}</p>
             <p class="trending-panel-album-details-trend">Trending ${location}</p>
           </div>
         `;
@@ -736,14 +752,18 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
       async function getRandomAlbumAttributes() {
         let albums = await fetchAlbumsFromAPI();
 
-        let { tracks, artist: trackArtist } =
-          albums[Math.floor(Math.random() * albums.length)];
+        let {
+          tracks,
+          artist: { artistName: trackArtist },
+        } = albums[Math.floor(Math.random() * albums.length)];
 
         let { title: track } =
           tracks[Math.floor(Math.random() * tracks.length)];
 
-        let { name: album, artist: albumArtist } =
-          albums[Math.floor(Math.random() * albums.length)];
+        let {
+          name: album,
+          artist: { artistName: albumArtist },
+        } = albums[Math.floor(Math.random() * albums.length)];
 
         return { track, trackArtist, album, albumArtist };
       }
@@ -819,19 +839,20 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
       }
 
       if (collectedAlbums.length > 0) {
-        collectedAlbums.forEach(({ id, name, artist, imageURL }) => {
-          innerPanelsHTML += `
+        collectedAlbums.forEach(
+          ({ id, name, artist: { artistName }, imageURL }) => {
+            innerPanelsHTML += `
         <div class="collection-panel-pane" data-album-id="${id}">
       <div class="collection-panel-album-cover-container">
         <img
           class="collection-panel-album-cover-image"
           src="${imageURL}"
-          alt="Cover art for ${name} by ${artist}"
+          alt="Cover art for ${name} by ${artistName}"
         />
       </div>
       <div class="collection-panel-album-details-container">
         <p class="collection-panel-album-details-title">${name}</p>
-        <p class="collection-panel-album-details-artist">${artist}</p>
+        <p class="collection-panel-album-details-artist">${artistName}</p>
       </div>
       <div class="collection-panel-album-ui-buttons">
         <i class="fa-solid fa-heart-crack" id="unfav-button"></i>
@@ -839,7 +860,8 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
       </div>
     </div>
         `;
-        });
+          }
+        );
 
         returnedHTML = `
         <div class="collection-search-container">
@@ -885,7 +907,7 @@ async function populateModal(albumID) {
       id,
       imageURL,
       name,
-      artist,
+      artist: { artistName },
       genre,
       tracks,
       albumLength,
@@ -911,8 +933,8 @@ async function populateModal(albumID) {
     modalAlbumArtDiv.innerHTML = `
     <img
     src="${imageURL}"
-    alt="Album cover for ${name} by ${artist}"
-    title="Album cover for ${name} by ${artist}"
+    alt="Album cover for ${name} by ${artistName}"
+    title="Album cover for ${name} by ${artistName}"
   />
     `;
 
@@ -923,7 +945,7 @@ async function populateModal(albumID) {
     modalAlbumDescDiv.innerHTML = `
     <div>
       <p>${name}</p>
-      <p>${artist}</p>
+      <p>${artistName}</p>
       <p>${genre}</p>
     </div>
     <div>
@@ -974,7 +996,8 @@ async function populateModal(albumID) {
 
         let { title } = album.tracks.find(({ title }) => title === trackname);
 
-        let trackDetails = { imageURL, title, artist, tracks };
+        let trackDetails = { imageURL, title, artistName, tracks };
+
         updateCurrentTrackInPlayer(trackDetails);
       })
     );
@@ -985,7 +1008,7 @@ async function populateModal(albumID) {
 }
 
 function updateCurrentTrackInPlayer(trackDetails) {
-  let { imageURL, title, artist, tracks } = trackDetails;
+  let { imageURL, title, artistName, tracks } = trackDetails;
 
   if (title === undefined) title = tracks[0].title;
 
@@ -1005,7 +1028,7 @@ function updateCurrentTrackInPlayer(trackDetails) {
   </div>
   <div>
     <p class="current-track-title">${title}</p>
-    <p class="current-track-artist">${artist}</p>
+    <p class="current-track-artist">${artistName}</p>
   </div>
   <div class="player-playback-buttons">
     <i class="fa-solid fa-backward"></i>
