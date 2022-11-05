@@ -457,12 +457,12 @@ function listenForNewChildren(parentElement) {
         for (const child of children) {
           if (child.classList.contains("trending-panel-settings-pane")) {
             let panes = document.querySelectorAll(".trending-panel-pane");
-            handleTrendingPane(panes);
+            handlePaneClicked(panes);
           }
 
           if (child.classList.contains("collection-panel-settings-pane")) {
             let panes = document.querySelectorAll(".collection-panel-pane");
-            handleCollectionPane(panes);
+            handlePaneClicked(panes);
           }
         }
       }
@@ -473,23 +473,9 @@ function listenForNewChildren(parentElement) {
   observer.observe(parentElement, config);
 }
 
-async function handleTrendingPane(panes) {
+async function handlePaneClicked(panes) {
   panes.forEach((pane) => {
     let { albumId: id, paneType: type } = pane.dataset;
-
-    pane.addEventListener("click", async (e) => {
-      if (e.target.matches("#play-button")) {
-        fetchAndPlayAlbum(id);
-      }
-    });
-  });
-}
-
-async function handleCollectionPane(panes) {
-  panes.forEach((pane) => {
-    let { albumId: id, paneType: type } = pane.dataset;
-
-    let isFavorited = true;
 
     pane.addEventListener("click", async (e) => {
       if (e.target.matches("#play-button")) {
@@ -497,6 +483,8 @@ async function handleCollectionPane(panes) {
       }
 
       if (e.target.matches("#unfav-button")) {
+        let isFavorited = true;
+
         await attemptToUpdateAlbumState(id, null, isFavorited);
         await layoutOptionsPanel(
           navPanelHTMLObjects["Collection"].classTitle,
@@ -505,16 +493,6 @@ async function handleCollectionPane(panes) {
       }
     });
   });
-}
-
-function activeTrendingPanes(panes) {
-  panes.forEach((pane) =>
-    pane.addEventListener("click", async (e) => {
-      let id = pane.dataset.albumId;
-
-      await fetchAndPlayAlbum(id);
-    })
-  );
 }
 
 async function fetchAndPlayAlbum(albumId) {
