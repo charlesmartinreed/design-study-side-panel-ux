@@ -518,11 +518,11 @@ body {
   text-transform: capitalize;
 }
 
-.trending-panel-pane::after {
+/* .trending-panel-pane::after {
   content: "▶";
   height: 100%;
   width: 100%;
-  /* background-color: rgba(12, 130, 12, 1); */
+  background-color: rgba(12, 130, 12, 1);
   background-color: rgba(84, 223, 84, 1);
   display: flex;
   justify-content: center;
@@ -539,13 +539,14 @@ body {
   border-top-right-radius: 10px;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
-}
+} */
 
 .collection-panel-album-details-container {
   position: relative;
 }
 
-.collection-panel-album-ui-buttons {
+.collection-panel-album-ui-buttons,
+.trending-panel-album-ui-buttons {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -568,6 +569,15 @@ body {
   /* background-color: red; */
 }
 
+.trending-panel-album-ui-buttons #play-button {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease-in-out;
+}
+
 .collection-panel-album-ui-buttons #play-button,
 .collection-panel-album-ui-buttons #unfav-button {
   width: 50%;
@@ -585,7 +595,8 @@ body {
   transform: scale(1.01);
 }
 
-.collection-panel-album-ui-buttons #play-button {
+.collection-panel-album-ui-buttons #play-button,
+.trending-panel-album-ui-buttons #play-button {
   background-color: rgba(84, 223, 84, 1);
   border-bottom-right-radius: 4px;
   /* height: 100%; */
@@ -603,7 +614,7 @@ body {
 }
 
 .collection-panel-album-ui-buttons:hover,
-.trending-panel-pane:hover::after {
+.trending-panel-album-ui-buttons:hover {
   opacity: 1;
 }
 
@@ -1090,7 +1101,7 @@ body {
   cursor: pointer;
   max-width: 100%;
   max-height: 400px;
-  background-color: #111;
+  background-color: rgb(21, 21, 21);
   color: white;
   display: flex;
   justify-content: space-between;
@@ -1098,6 +1109,24 @@ body {
   padding: 1rem 2rem;
   margin: 0.25rem;
   border-radius: 4px;
+
+  transition: all 0.2s var(--bezier-with-bounce);
+}
+
+.search-result-card:hover,
+.search-result-card:focus {
+  transform: scale(1.02);
+}
+
+.search-result-title-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 1.5rem;
+  letter-spacing: 0.5px;
+  /* padding: 0 1rem; */
+  /* background-color: red; */
 }
 
 .search-result-title-container,
@@ -1117,12 +1146,27 @@ body {
   text-align: center;
 }
 
-.search-result-type .album {
-  background-color: red;
+.search-result-type-song {
+  background-color: #6759dc;
 }
 
-.search-result-type .song {
-  background-color: yellow;
+.search-result-type-album {
+  /* background-color: #392ac7; */
+  background-color: #e04980;
+}
+
+.search-result-title-container img {
+  width: 75px;
+  height: 75px;
+  object-fit: cover;
+}
+
+.search-result-image-artist-photo {
+  border-radius: 50%;
+}
+
+.search-result-image-album-cover {
+  border-radius: 2px;
 }
 
 /* MODAL - SEARCH END */

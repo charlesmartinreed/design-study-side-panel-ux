@@ -144,13 +144,13 @@ async function handleSearchInputFor(searchQuery) {
     if (albumResults.length === 0 && songResults.length === 0) {
       createEmptyResultsCard();
     } else {
-      albumResults.forEach((albumResult) =>
-        parseSearchResultDataForAlbum(albumResult)
-      );
+      albumResults.forEach((albumResult) => {
+        parseSearchResultDataForAlbum(albumResult);
+      });
 
-      songResults.forEach((songResult) =>
-        parseSearchResultDataForSong(songResult)
-      );
+      songResults.forEach((songResult) => {
+        parseSearchResultDataForSong(songResult);
+      });
     }
   } catch (e) {
     console.error(e);
@@ -170,6 +170,8 @@ function createEmptyResultsCard() {
 }
 
 function parseSearchResultDataForAlbum(albumResult) {
+  console.log(albumResult);
+
   let {
     id,
     name: title,
@@ -181,12 +183,14 @@ function parseSearchResultDataForAlbum(albumResult) {
 }
 
 function parseSearchResultDataForSong(songResult) {
+  console.log(songResult);
   let {
     albumId,
     matchedTrack: [{ title }],
+    artistImageURL,
   } = songResult;
 
-  createSearchResultCard({ albumId, title }, "song");
+  createSearchResultCard({ albumId, title, imageURL: artistImageURL }, "song");
 }
 
 function createSearchResultCard(result, resultType) {
@@ -195,10 +199,19 @@ function createSearchResultCard(result, resultType) {
 
   resultDiv.innerHTML = `
       <div class="search-result-title-container">
+      <img class="${
+        resultType === "song"
+          ? "search-result-image-artist-photo"
+          : "search-result-image-album-cover"
+      }" alt="" src="${result.imageURL}"/>
         <p class="">${result.title}</p>
       </div>
       <div class="search-result-type-container">
-        <p class="search-result-type">${resultType}</p>
+        <p class="${
+          resultType === "song"
+            ? "search-result-type search-result-type-album"
+            : "search-result-type search-result-type-song"
+        }">${resultType}</p>
       </div>
     `;
 
@@ -334,7 +347,6 @@ async function toggleAlbumInCollection(id, currentState) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-    console.log("attempting to update state");
     return res;
   } catch (e) {
     console.error(e);
@@ -445,12 +457,12 @@ function listenForNewChildren(parentElement) {
         for (const child of children) {
           if (child.classList.contains("trending-panel-settings-pane")) {
             let panes = document.querySelectorAll(".trending-panel-pane");
-            activeTrendingPanes(panes);
+            handleTrendingPane(panes);
           }
 
           if (child.classList.contains("collection-panel-settings-pane")) {
             let panes = document.querySelectorAll(".collection-panel-pane");
-            handleCollectionPaneClicked(panes);
+            handleCollectionPane(panes);
           }
         }
       }
@@ -461,9 +473,22 @@ function listenForNewChildren(parentElement) {
   observer.observe(parentElement, config);
 }
 
-async function handleCollectionPaneClicked(panes) {
+async function handleTrendingPane(panes) {
   panes.forEach((pane) => {
-    let id = pane.dataset.albumId;
+    let { albumId: id, paneType: type } = pane.dataset;
+
+    pane.addEventListener("click", async (e) => {
+      if (e.target.matches("#play-button")) {
+        fetchAndPlayAlbum(id);
+      }
+    });
+  });
+}
+
+async function handleCollectionPane(panes) {
+  panes.forEach((pane) => {
+    let { albumId: id, paneType: type } = pane.dataset;
+
     let isFavorited = true;
 
     pane.addEventListener("click", async (e) => {
@@ -594,7 +619,6 @@ function handleModalInForeground(modal) {
 
 function removeModalChildren(modal) {
   for (const child of modal.children) {
-    console.log("removing child", child);
     modal.removeChild(child);
   }
 
@@ -708,6 +732,7 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
           let trendingPanelPane = document.createElement("div");
           trendingPanelPane.className = "trending-panel-pane";
           trendingPanelPane.setAttribute("data-album-id", id);
+          trendingPanelPane.setAttribute("data-pane-type", "trending");
 
           trendingPanelPane.innerHTML += `
           <div class="trending-panel-album-cover-container">
@@ -721,6 +746,9 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
             <p class="trending-panel-album-details-title">${name}</p>
             <p class="trending-panel-album-details-artist">${artistName}</p>
             <p class="trending-panel-album-details-trend">Trending ${location}</p>
+          </div>
+          <div class="trending-panel-album-ui-buttons">
+          <i class="fa-solid fa-play" id="play-button"></i>
           </div>
         `;
 
@@ -842,7 +870,7 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
         collectedAlbums.forEach(
           ({ id, name, artist: { artistName }, imageURL }) => {
             innerPanelsHTML += `
-        <div class="collection-panel-pane" data-album-id="${id}">
+        <div class="collection-panel-pane" data-pane-type="collection" data-album-id="${id}">
       <div class="collection-panel-album-cover-container">
         <img
           class="collection-panel-album-cover-image"
