@@ -60,8 +60,6 @@ const loading = new Event("loading");
 const notLoading = new Event("done loading");
 
 const contentPanels = document.querySelector(".content-panels");
-
-// const baseURLLocal = `http://localhost:5000`;
 const baseURLRemote = `https://album-api-project.onrender.com`;
 
 let modalIsActive = false;
