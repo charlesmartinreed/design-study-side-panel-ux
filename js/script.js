@@ -61,7 +61,7 @@ const notLoading = new Event("done loading");
 
 const contentPanels = document.querySelector(".content-panels");
 
-const baseURLLocal = `http://localhost:5000`;
+// const baseURLLocal = `http://localhost:5000`;
 const baseURLRemote = `https://album-api-project.onrender.com`;
 
 let modalIsActive = false;
@@ -338,7 +338,7 @@ async function attemptToUpdateAlbumState(
 }
 
 async function toggleAlbumInCollection(id, currentState) {
-  let URL = `${baseURLLocal}/api/album/${id}`;
+  let URL = `${baseURLRemote}/api/album/${id}`;
   let data = { prop: "isFavorited", value: !currentState };
 
   try {
@@ -388,13 +388,14 @@ navItems.forEach((navItem) => {
 });
 
 async function fetchAlbumsFromAPI(query = null, path = null) {
-  let baseURL = `${baseURLLocal}`;
+  let baseURL = `${baseURLRemote}`;
   let fetchURL;
 
   let defaultPath = "api/albums";
   let defaultQuery = "?limit=8";
 
-  fetchURL = `${baseURL}/${path ?? defaultPath}/${query ?? defaultQuery}`;
+  fetchURL = `${baseURLRemote}/${path ?? defaultPath}/${query ?? defaultQuery}`;
+  console.log("fetching from url", fetchURL);
 
   try {
     let res = await fetch(fetchURL);
@@ -894,7 +895,7 @@ async function layoutOptionsPanel(sectionClass, sectionTitle) {
 async function populateModal(albumID) {
   loader.dispatchEvent(loading);
 
-  let URL = `${baseURLLocal}/api/album/${albumID}`;
+  let URL = `${baseURLRemote}/api/album/${albumID}`;
   let album;
 
   try {
